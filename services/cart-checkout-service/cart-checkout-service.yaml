@@ -1,0 +1,142 @@
+openapi: 3.1.0
+info:
+  title: Nexo Commerce - Cart & Checkout Service API
+  version: 1.0.0
+  description: |
+    Contrato HTTP del microservicio de carrito, checkout y pagos.
+    El backend recalcula precios y stock; nunca acepta el total enviado por el navegador
+    como fuente de verdad. Los importes se expresan en centavos.
+servers:
+  - url: https://api.example.com/v1
+    description: Producción
+  - url: http://localhost:3004/v1
+    description: Desarrollo local
+
+tags:
+  - name: Carrito
+  - name: Checkout y pagos
+
+security:
+  - bearerAuth: []
+
+paths:
+  /cart/coupon:
+    post:
+      tags: [Carrito]
+      summary: Validar cupón
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CouponInput' } } }
+      responses:
+        '200':
+          {
+            description: Cupón válido,
+            content:
+              { application/json: { schema: { $ref: '#/components/schemas/CouponResult' } } },
+          }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /checkout/session:
+    post:
+      tags: [Checkout y pagos]
+      summary: Crear sesión de checkout alojada
+      description: El backend recalcula precios y stock. Nunca aceptar el total enviado por el navegador como fuente de verdad.
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/CheckoutInput' } } }
+      responses:
+        '201':
+          {
+            description: Sesión creada,
+            content:
+              { application/json: { schema: { $ref: '#/components/schemas/CheckoutSession' } } },
+          }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409':
+          {
+            description: Stock insuficiente,
+            content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+          }
+
+  /payments/webhook:
+    post:
+      tags: [Checkout y pagos]
+      security: []
+      summary: Webhook firmado del proveedor de pagos
+      description: Verificar firma, idempotencia y estado en el backend antes de confirmar pedido o descontar stock.
+      parameters:
+        - name: Stripe-Signature
+          in: header
+          required: false
+          schema: { type: string }
+        - name: MercadoPago-Signature
+          in: header
+          required: false
+          schema: { type: string }
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, additionalProperties: true } } }
+      responses:
+        '204': { description: Evento aceptado }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+components:
+  responses:
+    BadRequest:
+      {
+        description: Datos inválidos,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+    Unauthorized:
+      {
+        description: Token faltante o inválido,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+    NotFound:
+      {
+        description: Recurso no encontrado,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    CouponInput:
+      type: object
+      required: [code]
+      properties: { code: { type: string, minLength: 2, maxLength: 40 } }
+    CouponResult:
+      type: object
+      required: [code, discountType, discountValue]
+      properties:
+        code: { type: string }
+        discountType: { type: string, enum: [percentage, fixed] }
+        discountValue: { type: integer, minimum: 0 }
+    CartLine:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId: { type: integer, minimum: 1 }
+        quantity: { type: integer, minimum: 1, maximum: 99 }
+    CheckoutInput:
+      type: object
+      required: [items, addressId, couponCode]
+      properties:
+        items: { type: array, minItems: 1, items: { $ref: '#/components/schemas/CartLine' } }
+        addressId: { type: string }
+        couponCode: { type: string }
+    CheckoutSession:
+      type: object
+      required: [sessionId, checkoutUrl, expiresAt]
+      properties:
+        sessionId: { type: string }
+        checkoutUrl: { type: string, format: uri }
+        expiresAt: { type: string, format: date-time }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, examples: [VALIDATION_ERROR] }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }

@@ -1,0 +1,108 @@
+<section class="welcome-row">
+  <div>
+    <p class="eyebrow">CATÁLOGO / PRODUCTOS DESTACADOS</p>
+    <h1>Todo lo que necesitas,<br /><em>en un solo lugar.</em></h1>
+  </div>
+  <div class="service-note">
+    <span>✓</span>
+    <div>
+      <strong>Compra protegida</strong
+      ><small>Pagá seguro y recibí soporte<br />en cada pedido.</small>
+    </div>
+  </div>
+</section>
+<section class="catalog-layout">
+  <aside class="filters">
+    <div class="filter-heading">
+      <strong>Filtrar productos</strong
+      ><button (click)="category.set('Todas'); maxPrice.set(250); search.set('')">Limpiar</button>
+    </div>
+    <div class="filter-block">
+      <label>Buscar por nombre</label
+      ><input
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
+        placeholder="Ej. auriculares"
+      />
+    </div>
+    <div class="filter-block">
+      <label>Categoría</label>
+      @for (item of categories; track item) {
+        <button
+          class="filter-option"
+          [class.selected]="category() === item"
+          (click)="category.set(item)"
+        >
+          <span class="radio"></span>{{ item
+          }}<small>{{
+            item === 'Todas'
+              ? products().length
+              : products().filter((p) => p.category === item).length
+          }}</small>
+        </button>
+      }
+    </div>
+    <div class="filter-block">
+      <label
+        >Precio máximo <strong>{{ formatPrice(maxPrice()) }}</strong></label
+      ><input
+        class="range"
+        type="range"
+        min="20"
+        max="250"
+        step="5"
+        [ngModel]="maxPrice()"
+        (ngModelChange)="maxPrice.set($event)"
+      />
+      <div class="range-labels"><span>$20</span><span>$250</span></div>
+    </div>
+  </aside>
+  <div class="catalog-main">
+    <div class="catalog-toolbar">
+      <strong>{{ filtered().length }} productos</strong
+      ><select [ngModel]="sort()" (ngModelChange)="sort.set($event)">
+        <option value="relevance">Más relevantes</option>
+        <option value="priceAsc">Menor precio</option>
+        <option value="priceDesc">Mayor precio</option>
+      </select>
+    </div>
+    <div class="product-grid">
+      @for (product of filtered(); track product.id) {
+        <article class="product-card" tabindex="0">
+          <div class="product-image">
+            <img [src]="product.image" [alt]="product.name" />
+            @if (product.badge) {
+              <span class="badge">{{ product.badge }}</span>
+            }
+            <button
+              class="heart"
+              (click)="catalog.toggleFavorite(product.id)"
+              [class.selected]="catalog.favorites().includes(product.id)"
+              aria-label="Agregar a favoritos"
+            >
+              ♡
+            </button>
+          </div>
+          <div class="product-info">
+            <small>{{ product.category }}</small>
+            <h2>
+              <a [routerLink]="['/product', product.id]">{{ product.name }}</a>
+            </h2>
+            <div class="rating">
+              ★ <span>{{ product.rating }}</span> <i>(24)</i>
+            </div>
+            <div class="product-bottom">
+              <strong>{{ formatPrice(product.price) }}</strong
+              ><button (click)="addToCart(product)" aria-label="Agregar al carrito">＋</button>
+            </div>
+            <p class="stock" [class.low]="product.stock < 8">
+              ● {{ product.stock < 8 ? 'Últimas unidades' : 'En stock' }}
+            </p>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-state">No encontramos productos con estos filtros.</div>
+      }
+    </div>
+  </div>
+</section>

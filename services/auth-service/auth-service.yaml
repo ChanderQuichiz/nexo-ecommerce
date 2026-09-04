@@ -1,0 +1,237 @@
+openapi: 3.1.0
+info:
+  title: Nexo Commerce - Auth Service API
+  version: 1.0.0
+  description: |
+    Contrato HTTP del microservicio de autenticación y perfil.
+    Responsable de identidad, credenciales, sesión y datos personales del usuario.
+servers:
+  - url: https://api.example.com/v1
+    description: Producción
+  - url: http://localhost:3001/v1
+    description: Desarrollo local
+
+tags:
+  - name: Autenticación
+  - name: Perfil
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/register:
+    post:
+      tags: [Autenticación]
+      security: []
+      summary: Registrar cliente
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/RegisterInput' }
+      responses:
+        '201':
+          description: Cuenta creada y sesión iniciada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+
+  /auth/login:
+    post:
+      tags: [Autenticación]
+      security: []
+      summary: Iniciar sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginInput' }
+      responses:
+        '200':
+          description: Sesión iniciada; el rol es emitido por el servidor
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuthResponse' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/logout:
+    post:
+      tags: [Autenticación]
+      summary: Cerrar sesión
+      responses:
+        '204': { description: Sesión cerrada }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/forgot-password:
+    post:
+      tags: [Autenticación]
+      security: []
+      summary: Solicitar recuperación por correo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email: { type: string, format: email }
+      responses:
+        '202': { description: Solicitud aceptada; no revela si el correo existe }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/reset-password:
+    post:
+      tags: [Autenticación]
+      security: []
+      summary: Cambiar contraseña con token de correo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ResetPasswordInput' }
+      responses:
+        '204': { description: Contraseña actualizada }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '410':
+          {
+            description: Token expirado,
+            content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+          }
+
+  /me:
+    get:
+      tags: [Perfil]
+      summary: Obtener perfil del usuario autenticado
+      responses:
+        '200':
+          description: Perfil actual
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    patch:
+      tags: [Perfil]
+      summary: Actualizar datos personales
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ProfileInput' }
+      responses:
+        '200':
+          description: Perfil actualizado
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /me/address:
+    put:
+      tags: [Perfil]
+      summary: Guardar dirección principal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AddressInput' }
+      responses:
+        '200':
+          description: Dirección guardada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Address' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+components:
+  responses:
+    BadRequest:
+      {
+        description: Datos inválidos,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+    Unauthorized:
+      {
+        description: Token faltante o inválido,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+    Conflict:
+      {
+        description: Conflicto de negocio,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+    TooManyRequests:
+      {
+        description: Demasiados intentos,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    UserRole: { type: string, enum: [cliente, operador, administrador] }
+    User:
+      type: object
+      required: [id, name, email, role, active]
+      properties:
+        id: { type: string, examples: [usr_123] }
+        name: { type: string, minLength: 2, maxLength: 120 }
+        email: { type: string, format: email }
+        role: { $ref: '#/components/schemas/UserRole' }
+        active: { type: boolean }
+    RegisterInput:
+      type: object
+      required: [name, email, password]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        email: { type: string, format: email }
+        password: { type: string, format: password, minLength: 8, maxLength: 128 }
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, format: password, minLength: 8, maxLength: 128 }
+    AuthResponse:
+      type: object
+      required: [accessToken, expiresIn, user]
+      properties:
+        accessToken: { type: string }
+        expiresIn: { type: integer, examples: [3600] }
+        user: { $ref: '#/components/schemas/User' }
+    ResetPasswordInput:
+      type: object
+      required: [token, password]
+      properties:
+        token: { type: string, minLength: 20 }
+        password: { type: string, format: password, minLength: 8, maxLength: 128 }
+    ProfileInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+    AddressInput:
+      type: object
+      required: [line1, city, postalCode]
+      properties:
+        line1: { type: string, maxLength: 160 }
+        line2: { type: string, maxLength: 160 }
+        city: { type: string, maxLength: 80 }
+        postalCode: { type: string, maxLength: 20 }
+    Address:
+      allOf: [{ $ref: '#/components/schemas/AddressInput' }]
+      type: object
+      required: [id]
+      properties: { id: { type: string } }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, examples: [VALIDATION_ERROR] }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }

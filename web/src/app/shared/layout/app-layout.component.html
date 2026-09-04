@@ -1,0 +1,52 @@
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" routerLink="/shop"
+      ><span class="brand-mark">N</span>nexo<span class="brand-dot">.</span></a
+    >
+    <div class="global-search">
+      <span>⌕</span
+      ><input
+        [(ngModel)]="search"
+        (keyup.enter)="searchProducts()"
+        placeholder="Buscar productos, marcas y más"
+      /><button (click)="searchProducts()">Buscar</button>
+    </div>
+    <div class="user-actions">
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/profile" class="user-link"
+          ><small>Hola, {{ auth.user().name.split(' ')[0] }}</small
+          ><strong>Mi cuenta⌄</strong></a
+        ><a routerLink="/cart" class="cart-link"
+          >♧ Carrito <b class="cart-count">{{ cart.count() }}</b></a
+        ><button class="logout" (click)="auth.logout()" routerLink="/login">Salir</button>
+      } @else {
+        <a routerLink="/cart" class="cart-link"
+          >♧ Carrito <b class="cart-count">{{ cart.count() }}</b></a
+        ><a routerLink="/login" class="login-link">Iniciar sesión</a>
+      }
+    </div>
+  </header>
+  <nav class="main-nav">
+    <div class="nav-inner">
+      <a routerLink="/shop" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        >☰ <span>Tienda</span></a
+      ><a routerLink="/shop/offers" routerLinkActive="active">Ofertas</a>
+      @if (auth.isAuthenticated()) {
+        <a routerLink="/orders" routerLinkActive="active">Mis pedidos</a>
+      }
+      @if (auth.hasRole(['operador', 'administrador'])) {
+        <a routerLink="/operator/orders" routerLinkActive="active">Pedidos</a
+        ><a routerLink="/operator/inventory" routerLinkActive="active">Inventario</a>
+      }
+      @if (auth.hasRole(['administrador'])) {
+        <a routerLink="/admin/catalog" routerLinkActive="active">Catálogo</a
+        ><a routerLink="/admin/orders" routerLinkActive="active">Todos los pedidos</a>
+      }
+      <span class="nav-spacer"></span><span class="delivery">⌖ Envíos a todo el país</span>
+    </div>
+  </nav>
+  <main class="page-content"><router-outlet /></main>
+  <footer>
+    <span>© 2026 nexo. Compra simple, siempre.</span><span>Ayuda · Términos · Privacidad</span>
+  </footer>
+</div>

@@ -1,0 +1,33 @@
+<div class="backoffice-shell">
+  <aside class="backoffice-sidebar">
+    <a
+      class="brand"
+      [routerLink]="auth.user().role === 'administrador' ? '/admin/catalog' : '/operator/orders'"
+      ><span class="brand-mark">N</span>nexo<span class="brand-dot">.</span></a
+    >
+    <p class="sidebar-label">
+      {{ auth.user().role === 'administrador' ? 'ADMINISTRACIÓN' : 'OPERACIONES' }}
+    </p>
+    <nav>
+      @if (auth.user().role === 'operador') {
+        <a routerLink="/operator/orders" routerLinkActive="active">▣ Pedidos</a
+        ><a routerLink="/operator/inventory" routerLinkActive="active">▤ Inventario</a>
+      }
+      @if (auth.hasRole(['administrador'])) {
+        <a routerLink="/admin/catalog" routerLinkActive="active">▦ Catálogo</a
+        ><a routerLink="/admin/orders" routerLinkActive="active">◫ Todos los pedidos</a>
+        <a routerLink="/admin/users" routerLinkActive="active">♙ Empleados y usuarios</a>
+      }
+    </nav>
+    <span class="sidebar-spacer"></span
+    ><button class="backoffice-logout" (click)="auth.logout()" routerLink="/login">
+      Cerrar sesión
+    </button>
+  </aside>
+  <div class="backoffice-main">
+    <header class="backoffice-header">
+      <span>Panel de control</span><strong>{{ auth.user().name }}</strong>
+    </header>
+    <main class="backoffice-content"><router-outlet /></main>
+  </div>
+</div>

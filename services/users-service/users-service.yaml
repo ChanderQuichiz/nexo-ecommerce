@@ -1,0 +1,142 @@
+openapi: 3.1.0
+info:
+  title: Nexo Commerce - Users Service API
+  version: 1.0.0
+  description: |
+    Contrato HTTP del microservicio de gestión de usuarios.
+    Responsable de la administración de cuentas, roles y estado de usuarios/empleados.
+servers:
+  - url: https://api.example.com/v1
+    description: Producción
+  - url: http://localhost:3006/v1
+    description: Desarrollo local
+
+tags:
+  - name: Administrador
+
+security:
+  - bearerAuth: []
+
+paths:
+  /admin/users:
+    get:
+      tags: [Administrador]
+      summary: Listar usuarios
+      parameters:
+        - { $ref: '#/components/parameters/Page' }
+        - { $ref: '#/components/parameters/Limit' }
+        - name: role
+          in: query
+          schema: { $ref: '#/components/schemas/UserRole' }
+      responses:
+        '200':
+          {
+            description: Usuarios paginados,
+            content: { application/json: { schema: { $ref: '#/components/schemas/UserPage' } } },
+          }
+        '403': { $ref: '#/components/responses/Forbidden' }
+    post:
+      tags: [Administrador]
+      summary: Crear usuario o empleado
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/AdminUserInput' } } }
+      responses:
+        '201':
+          {
+            description: Usuario creado,
+            content: { application/json: { schema: { $ref: '#/components/schemas/User' } } },
+          }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/users/{userId}:
+    patch:
+      tags: [Administrador]
+      summary: Cambiar rol o estado de usuario
+      parameters: [{ $ref: '#/components/parameters/UserId' }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: '#/components/schemas/AdminUserPatch' } } }
+      responses:
+        '200':
+          {
+            description: Usuario actualizado,
+            content: { application/json: { schema: { $ref: '#/components/schemas/User' } } },
+          }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+components:
+  parameters:
+    Page: { name: page, in: query, schema: { type: integer, minimum: 1, default: 1 } }
+    Limit:
+      { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+    UserId:
+      {
+        name: userId,
+        in: path,
+        required: true,
+        schema: { type: string, minLength: 1, maxLength: 50 },
+      }
+  responses:
+    BadRequest:
+      {
+        description: Datos inválidos,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+    Forbidden:
+      {
+        description: Rol insuficiente,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+    NotFound:
+      {
+        description: Recurso no encontrado,
+        content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } },
+      }
+  securitySchemes:
+    bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT }
+  schemas:
+    UserRole: { type: string, enum: [cliente, operador, administrador] }
+    User:
+      type: object
+      required: [id, name, email, role, active]
+      properties:
+        id: { type: string, examples: [usr_123] }
+        name: { type: string, minLength: 2, maxLength: 120 }
+        email: { type: string, format: email }
+        role: { $ref: '#/components/schemas/UserRole' }
+        active: { type: boolean }
+    AdminUserInput:
+      type: object
+      required: [name, email, role]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 120 }
+        email: { type: string, format: email }
+        role: { $ref: '#/components/schemas/UserRole' }
+    AdminUserPatch:
+      type: object
+      properties:
+        role: { $ref: '#/components/schemas/UserRole' }
+        active: { type: boolean }
+    PageMeta:
+      type: object
+      required: [page, limit, total]
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }
+    UserPage:
+      type: object
+      required: [data, meta]
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/User' } }
+        meta: { $ref: '#/components/schemas/PageMeta' }
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, examples: [VALIDATION_ERROR] }
+        message: { type: string }
+        details: { type: object, additionalProperties: true }
