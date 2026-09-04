@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { CatalogService } from '../../core/services/catalog.service';
 import { CartService } from '../../core/services/cart.service';
+import { AdminService } from '../../core/services/admin.service';
 import { Product, ProductCategory } from '../../core/models/product.model';
 
 @Component({
@@ -13,6 +14,7 @@ import { Product, ProductCategory } from '../../core/models/product.model';
 })
 export class CatalogComponent {
   protected readonly catalog = inject(CatalogService);
+  protected readonly admin = inject(AdminService);
   private readonly route = inject(ActivatedRoute);
   protected readonly offersOnly = this.route.snapshot.data['offers'] === true;
   private readonly cart = inject(CartService);
@@ -20,13 +22,7 @@ export class CatalogComponent {
   protected readonly category = signal('Todas');
   protected readonly maxPrice = signal(250);
   protected readonly sort = signal<'relevance' | 'priceAsc' | 'priceDesc'>('relevance');
-  protected readonly categories: Array<'Todas' | ProductCategory> = [
-    'Todas',
-    'Audio',
-    'Accesorios',
-    'Oficina',
-    'Hogar',
-  ];
+  protected readonly categories = computed(() => ['Todas', ...this.admin.categories()]);
   protected readonly products = this.catalog.products;
   protected readonly filtered = computed(() =>
     this.catalog

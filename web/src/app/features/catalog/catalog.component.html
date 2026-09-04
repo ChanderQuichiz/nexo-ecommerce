@@ -27,7 +27,7 @@
     </div>
     <div class="filter-block">
       <label>Categoría</label>
-      @for (item of categories; track item) {
+      @for (item of categories(); track item) {
         <button
           class="filter-option"
           [class.selected]="category() === item"
@@ -76,11 +76,11 @@
             }
             <button
               class="heart"
-              (click)="catalog.toggleFavorite(product.id)"
+              (click)="catalog.toggleFavorite(product.id); $event.stopPropagation()"
               [class.selected]="catalog.favorites().includes(product.id)"
               aria-label="Agregar a favoritos"
             >
-              ♡
+              {{ catalog.favorites().includes(product.id) ? '♥' : '♡' }}
             </button>
           </div>
           <div class="product-info">
@@ -89,14 +89,21 @@
               <a [routerLink]="['/product', product.id]">{{ product.name }}</a>
             </h2>
             <div class="rating">
-              ★ <span>{{ product.rating }}</span> <i>(24)</i>
+              ★ <span>{{ product.rating }}</span> <i>({{ product.reviews?.length || 0 }})</i>
             </div>
             <div class="product-bottom">
               <strong>{{ formatPrice(product.price) }}</strong
               ><button (click)="addToCart(product)" aria-label="Agregar al carrito">＋</button>
             </div>
             <p class="stock" [class.low]="product.stock < 8">
-              ● {{ product.stock < 8 ? 'Últimas unidades' : 'En stock' }}
+              ●
+              {{
+                product.stock === 0
+                  ? 'Sin stock'
+                  : product.stock < 8
+                    ? 'Últimas unidades'
+                    : 'En stock'
+              }}
             </p>
           </div>
         </article>

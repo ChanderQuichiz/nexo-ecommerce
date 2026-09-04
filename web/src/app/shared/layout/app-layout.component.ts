@@ -16,9 +16,15 @@ export class AppLayoutComponent {
   protected readonly catalog = inject(CatalogService);
   protected readonly cart = inject(CartService);
   private readonly router = inject(Router);
-  protected search = this.catalog.searchTerm();
+
+  protected get searchTerm(): string {
+    return this.catalog.searchTerm();
+  }
+  protected set searchTerm(value: string) {
+    this.catalog.setSearch(value);
+  }
+
   protected searchProducts(): void {
-    this.catalog.setSearch(this.search);
     this.router.navigateByUrl('/shop');
   }
 }

@@ -48,7 +48,7 @@ export class OrdersService {
   registerIssue(id: string, issue: string): void {
     this.orderState.update((orders) =>
       orders.map((order) =>
-        order.id === id ? { ...order, issue: issue.trim() || 'Merma registrada' } : order,
+        order.id === id ? { ...order, issue: issue.trim() || 'Incidencia sin especificar' } : order,
       ),
     );
   }
@@ -59,7 +59,11 @@ export class OrdersService {
     const order = {
       id: `NEX-${1053 + this.orderState().length}`,
       customer,
-      date: '03 sep 2026',
+      date: new Date().toLocaleDateString('es-AR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }),
       total: `$${total.toFixed(2)}`,
       status: 'En preparación' as const,
     };

@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { CATALOG } from '../data/catalog.data';
-import { CartItem, Product, ProductCategory } from '../models/product.model';
+import { CartItem, Product, ProductCategory, Review } from '../models/product.model';
 
 export interface CatalogQuery {
   search: string;
@@ -45,6 +45,43 @@ export class CatalogService {
   }
   add(product: Product): void {
     this.catalog.update((items) => [...items, product]);
+  }
+  addReview(productId: number, review: Omit<Review, 'id' | 'date'>): void {
+    const product = this.byId(productId);
+    if (!product) return;
+
+    const newReview: Review = {
+      ...review,
+      id: Date.now(),
+      date: new Date().toLocaleDateString('es-AR', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }),
+    };
+
+    const reviews = [...(product.reviews || []), newReview];
+    const avgRating = reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length;
+
+    this.update({
+      ...product,
+      reviews,
+      rating: Number(avgRating.toFixed(1)),
+    });
+  }
+  removeReview(productId: number, reviewId: number): void {
+    const product = this.byId(productId);
+    if (!product || !product.reviews) return;
+
+    const reviews = product.reviews.filter((r) => r.id !== reviewId);
+    const avgRating =
+      reviews.length > 0 ? reviews.reduce((acc, r) => acc + r.rating, 0) / reviews.length : 0;
+
+    this.update({
+      ...product,
+      reviews,
+      rating: Number(avgRating.toFixed(1)),
+    });
   }
   remove(productId: number): void {
     this.catalog.update((items) =>

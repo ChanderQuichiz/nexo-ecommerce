@@ -1,4 +1,12 @@
-export type ProductCategory = 'Audio' | 'Accesorios' | 'Oficina' | 'Hogar';
+export type ProductCategory = string;
+
+export interface Review {
+  id: number;
+  user: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
 
 export interface Product {
   id: number;
@@ -10,6 +18,7 @@ export interface Product {
   image: string;
   badge?: string;
   active?: boolean;
+  reviews?: Review[];
 }
 
 export interface CartItem extends Product {

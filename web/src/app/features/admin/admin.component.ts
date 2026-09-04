@@ -26,33 +26,41 @@ import { Product } from '../../core/models/product.model';
       ><button [class.tab-active]="view() === 'categorias'" (click)="view.set('categorias')">
         Categorías <span>{{ admin.categories().length }}</span></button
       ><button [class.tab-active]="view() === 'usuarios'" (click)="view.set('usuarios')">
-        Usuarios <span>{{ admin.users().length }}</span>
+        Usuarios <span>{{ admin.users().length }}</span></button
+      ><button [class.tab-active]="view() === 'reseñas'" (click)="view.set('reseñas')">
+        Reseñas
       </button>
     </div>
     @if (view() === 'productos') {
       @if (showForm()) {
         <form class="admin-form" (ngSubmit)="create()">
-          <h2>Nuevo producto</h2>
-          <input [(ngModel)]="draft.name" name="name" placeholder="Nombre" required /><select
-            [(ngModel)]="draft.category"
-            name="category"
-          >
-            @for (category of admin.categories(); track category) {
-              <option [value]="category">{{ category }}</option>
-            }</select
-          ><input
-            [(ngModel)]="draft.price"
-            name="price"
-            type="number"
-            placeholder="Precio"
-            required
-          /><input
-            [(ngModel)]="draft.stock"
-            name="stock"
-            type="number"
-            placeholder="Stock"
-            required
-          /><button class="primary-button compact">Guardar</button>
+          <h2>{{ editingId() ? 'Editar' : 'Nuevo' }} producto</h2>
+          <div class="form-grid">
+            <input [(ngModel)]="draft.name" name="name" placeholder="Nombre" required />
+            <select [(ngModel)]="draft.category" name="category">
+              @for (category of admin.categories(); track category) {
+                <option [value]="category">{{ category }}</option>
+              }
+            </select>
+            <input
+              [(ngModel)]="draft.price"
+              name="price"
+              type="number"
+              placeholder="Precio"
+              required
+            />
+            <input
+              [(ngModel)]="draft.stock"
+              name="stock"
+              type="number"
+              placeholder="Stock"
+              required
+            />
+            <input [(ngModel)]="draft.image" name="image" placeholder="URL de imagen" />
+            <button class="primary-button compact">
+              {{ editingId() ? 'Actualizar' : 'Guardar' }}
+            </button>
+          </div>
         </form>
       }
       <div class="orders-table">
@@ -61,15 +69,41 @@ import { Product } from '../../core/models/product.model';
           ><span>Acción</span>
         </div>
         @for (product of products(); track product.id) {
-          <div class="table-row">
-            <strong>{{ product.name }}</strong
-            ><span>{{ product.category }}</span
-            ><span [class.warning]="product.stock < 8">{{ product.stock }} u.</span
-            ><span>{{ product.price }}</span
-            ><button class="small-button" (click)="edit(product)">
-              {{ editingId() === product.id ? 'Editando' : 'Editar' }}</button
-            ><button class="small-button" (click)="catalog.remove(product.id)">Eliminar</button>
-          </div>
+          @if (product.active !== false) {
+            <div class="table-row">
+              <div class="product-cell">
+                <img [src]="product.image" class="admin-thumb" />
+                <strong>{{ product.name }}</strong>
+              </div>
+              <span>{{ product.category }}</span
+              ><span [class.warning]="product.stock < 8">{{ product.stock }} u.</span
+              ><span>{{ product.price }}</span>
+              <div class="row-actions">
+                <button class="small-button" (click)="edit(product)">Editar</button>
+                <button class="small-button" (click)="catalog.remove(product.id)">Eliminar</button>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    } @else if (view() === 'reseñas') {
+      <div class="orders-table">
+        <div class="table-head">
+          <span>Producto</span><span>Usuario</span><span>Calif.</span><span>Comentario</span
+          ><span>Acción</span>
+        </div>
+        @for (product of products(); track product.id) {
+          @for (review of product.reviews || []; track review.id) {
+            <div class="table-row">
+              <strong>{{ product.name }}</strong>
+              <span>{{ review.user }}</span>
+              <span class="rating">★ {{ review.rating }}</span>
+              <span class="truncate">{{ review.comment }}</span>
+              <button class="small-button" (click)="catalog.removeReview(product.id, review.id)">
+                Eliminar
+              </button>
+            </div>
+          }
         }
       </div>
     } @else if (view() === 'categorias') {
@@ -135,12 +169,14 @@ export class AdminComponent {
   protected readonly catalog = inject(CatalogService);
   protected readonly admin = inject(AdminService);
   protected readonly products = this.catalog.products;
-  protected readonly view = signal<'productos' | 'categorias' | 'usuarios'>('productos');
+  protected readonly view = signal<'productos' | 'categorias' | 'usuarios' | 'reseñas'>(
+    'productos',
+  );
   protected readonly showForm = signal(false);
   protected readonly editingId = signal<number | null>(null);
   protected newCategory = '';
   protected newUser = { name: '', email: '', role: 'cliente' as const };
-  protected draft = { name: '', category: 'Audio' as any, price: 0, stock: 0 };
+  protected draft = { name: '', category: 'Audio' as any, price: 0, stock: 0, image: '' };
   protected create(): void {
     if (!this.draft.name || this.draft.price <= 0 || this.draft.stock < 0) return;
     if (this.editingId()) {
@@ -155,9 +191,10 @@ export class AdminComponent {
       id: Date.now(),
       rating: 0,
       image:
+        this.draft.image ||
         'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80',
     });
-    this.draft = { name: '', category: 'Audio', price: 0, stock: 0 };
+    this.draft = { name: '', category: 'Audio', price: 0, stock: 0, image: '' };
     this.showForm.set(false);
   }
   protected edit(product: Product): void {
@@ -166,6 +203,7 @@ export class AdminComponent {
       category: product.category,
       price: product.price,
       stock: product.stock,
+      image: product.image,
     };
     this.editingId.set(product.id);
     this.showForm.set(true);

@@ -9,15 +9,23 @@ import { AuthService } from '../../core/services/auth.service';
     <h1>Mis pedidos</h1>
     <div class="orders-table">
       <div class="table-head">
-        <span>Pedido</span><span>Fecha</span><span>Total</span><span>Estado</span>
+        <span>Pedido</span><span>Fecha</span><span>Total</span><span>Estado</span
+        ><span>Detalle</span>
       </div>
       @for (order of orders(); track order.id) {
         <div class="table-row">
-          <strong>#{{ order.id }}</strong
-          ><span>{{ order.date }}</span
-          ><span>{{ order.total }}</span
-          ><b class="status" [class.delivered]="order.status === 'Entregado'">{{ order.status }}</b
-          ><button
+          <strong>#{{ order.id }}</strong>
+          <span>{{ order.date }}</span>
+          <span>{{ order.total }}</span>
+          <b class="status" [class.delivered]="order.status === 'Entregado'">{{ order.status }}</b>
+          <div class="row-info">
+            @if (order.issue) {
+              <small class="issue-tag">⚠️ {{ order.issue }}</small>
+            } @else {
+              <span class="muted">Sin novedades</span>
+            }
+          </div>
+          <button
             class="small-button"
             [disabled]="order.status !== 'En preparación'"
             (click)="cancel(order.id)"
