@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="ec745a71-00e6-4090-8915-97c0faa35579" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/web/src/environments/environment.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/auth-service.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/cart-checkout-service.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/catalog-service.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/inventory-service.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/orders-service.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/api/users-service.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/angular.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/web/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/app.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/app/app.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/app.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/app/app.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/app.routes.ts" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/app/app.routes.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/app.spec.ts" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/app/app.spec.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/data/catalog.data.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/guards/role.guard.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/models/auth.model.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/models/product.model.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/services/admin.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/services/auth.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/services/cart.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/services/catalog.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/services/checkout.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/services/orders.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/services/payment.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/core/services/profile.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/admin/admin.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/admin/order-management.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/admin/users.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/auth/forgot-password.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/auth/login.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/auth/register.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/cart/cart.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/catalog/catalog.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/catalog/catalog.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/catalog/product-detail.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/checkout/checkout.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/operator/inventory.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/operator/operator.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/orders/orders.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/features/profile/profile.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/shared/layout/app-layout.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/shared/layout/app-layout.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/shared/layout/backoffice-layout.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/app/shared/layout/backoffice-layout.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/src/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/web/src/styles.css" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8,
+  &quot;fromUser&quot;: false
+}</component>
+  <component name="ProjectId" id="3IswxztShrOswW0lFk0wfMPcL1q" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/chanderquichiz/Documents/ecommerce"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ec745a71-00e6-4090-8915-97c0faa35579" name="Changes" comment="" />
+      <created>1788566834542</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1788566834542</updated>
+    </task>
+    <servers />
+  </component>
+</project>

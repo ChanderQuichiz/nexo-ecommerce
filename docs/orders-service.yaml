@@ -1,0 +1,137 @@
+openapi: 3.0.3
+info:
+  title: Orders Service
+  description: Handles order creation, checkout, and order history.
+  version: 1.0.0
+servers:
+  - url: https://api.ecommerce.com/orders
+paths:
+  /:
+    get:
+      summary: List all orders (Admin)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of all orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+    post:
+      summary: Place a new order (Checkout)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        '201':
+          description: Order placed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '409':
+          description: Insufficient stock (HU-13)
+  /my:
+    get:
+      summary: Get current user's order history
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User's orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+  /{id}/status:
+    patch:
+      summary: Update order status (Admin)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, Pagado, En preparación, Enviado, Entregado, cancelled]
+      responses:
+        '200':
+          description: Status updated
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        total:
+          type: number
+        status:
+          type: string
+        date:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        shippingAddress:
+          type: object
+          properties:
+            address: { type: string }
+            city: { type: string }
+            phone: { type: string }
+    OrderItem:
+      type: object
+      properties:
+        productId: { type: integer }
+        name: { type: string }
+        price: { type: number }
+        quantity: { type: integer }
+    OrderCreate:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              productId: { type: integer }
+              quantity: { type: integer }
+        shippingAddress:
+          type: object
+          properties:
+            address: { type: string }
+            city: { type: string }
+            phone: { type: string }
+        paymentInfo:
+          type: object
+          properties:
+            cardNumber: { type: string }
+            expiry: { type: string }
+            cvv: { type: string }

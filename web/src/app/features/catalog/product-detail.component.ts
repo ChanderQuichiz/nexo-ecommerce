@@ -1,135 +1,125 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { CartService } from '../../core/services/cart.service';
-import { CatalogService } from '../../core/services/catalog.service';
-import { AuthService } from '../../core/services/auth.service';
+import { ProductService } from '../../core/product.service';
+import { CartService } from '../../core/cart.service';
+import { Product } from '../../core/models';
+import { Observable, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [RouterLink, FormsModule],
-  template: `<section class="detail-page">
-    @if (product()) {
-      <a routerLink="/shop" class="back-link">← Volver al catálogo</a>
-      <div class="detail-grid">
-        <div class="detail-image"><img [src]="product()?.image" [alt]="product()?.name" /></div>
-        <div class="detail-copy">
-          <p class="eyebrow">{{ product()?.category?.toUpperCase() }} / DETALLE</p>
-          <h1>{{ product()?.name }}</h1>
-          <div class="rating">
-            ★ <span>{{ product()?.rating }}</span> <i>{{ product()?.reviews?.length || 0 }} reseñas</i>
-            <button
-              class="heart-detail"
-              (click)="catalog.toggleFavorite(product()!.id)"
-              [class.selected]="catalog.favorites().includes(product()!.id)"
-            >
-              {{ catalog.favorites().includes(product()!.id) ? '♥' : '♡' }}
-            </button>
-          </div>
-          <p class="detail-description">
-            Producto seleccionado de calidad garantizada. Diseño funcional, materiales durables y
-            soporte incluido para que puedas usarlo todos los días.
-          </p>
-          <strong class="detail-price">{{ format(product()?.price || 0) }}</strong>
-          <p class="stock" [class.low]="(product()?.stock || 0) < 8">
-            ●
-            {{
-              product()?.stock === 0
-                ? 'Sin stock'
-                : (product()?.stock || 0) < 8
-                  ? 'Últimas unidades'
-                  : 'En stock'
-            }}
-            ({{ product()?.stock }} unidades)
-          </p>
-          <div class="detail-actions">
-            <button class="primary-button detail-button" (click)="cart.add(product()!)">
-              Agregar al carrito
-            </button>
-            <a routerLink="/cart" class="secondary-button">Ver carrito</a>
-          </div>
-        </div>
-      </div>
+  standalone: true,
+  imports: [CommonModule, RouterLink],
+  template: `
+    <div class="container mx-auto px-4 py-8">
+      @if (product$ | async; as product) {
+        <nav class="mb-8 text-sm">
+          <a routerLink="/catalog" class="text-indigo-600 hover:text-indigo-800">Catálogo</a>
+          <span class="mx-2 text-gray-400">/</span>
+          <span class="text-gray-600">{{ product.name }}</span>
+        </nav>
 
-      <div class="reviews-section">
-        <div class="reviews-header">
-          <h2>Reseñas de clientes</h2>
-          <button class="small-button" (click)="showReviewForm.set(!showReviewForm())">
-            {{ showReviewForm() ? 'Cancelar' : 'Escribir reseña' }}
-          </button>
-        </div>
-
-        @if (showReviewForm()) {
-          <form class="review-form" (ngSubmit)="submitReview()">
-            <h3>Tu opinión importa</h3>
-            <div class="rating-input">
-              <span>Calificación:</span>
-              <select [(ngModel)]="newReview.rating" name="rating">
-                <option [value]="5">5 - Excelente</option>
-                <option [value]="4">4 - Muy bueno</option>
-                <option [value]="3">3 - Bueno</option>
-                <option [value]="2">2 - Regular</option>
-                <option [value]="1">1 - Malo</option>
-              </select>
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+          <div class="md:flex">
+            <div class="md:w-1/2 lg:w-2/5">
+              <img
+                [src]="product.imageUrl"
+                [alt]="product.name"
+                class="w-full h-96 md:h-full object-cover"
+              />
             </div>
-            <textarea
-              [(ngModel)]="newReview.comment"
-              name="comment"
-              placeholder="Cuéntanos tu experiencia..."
-              required
-            ></textarea>
-            <button type="submit" class="primary-button compact">Publicar reseña</button>
-          </form>
-        }
-
-        <div class="reviews-list">
-          @for (review of product()?.reviews || []; track review.id) {
-            <div class="review-item">
-              <div class="review-meta">
-                <strong>{{ review.user }}</strong>
-                <span>{{ review.date }}</span>
-                <span class="rating">★ {{ review.rating }}</span>
+            <div class="p-8 md:w-1/2 lg:w-3/5">
+              <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-1">
+                {{ product.category }}
               </div>
-              <p>{{ review.comment }}</p>
+              <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ product.name }}</h1>
+              <p class="text-gray-600 text-lg mb-6 leading-relaxed">{{ product.description }}</p>
+
+              <div class="flex items-center mb-8">
+                <span class="text-3xl font-bold text-gray-900 mr-4">{{
+                  product.price | currency
+                }}</span>
+                @if (product.stock > 0) {
+                  <span
+                    class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full font-medium"
+                  >
+                    {{ product.stock }} en stock
+                  </span>
+                } @else {
+                  <span
+                    class="bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full font-medium"
+                  >
+                    Agotado
+                  </span>
+                }
+              </div>
+
+              <div class="flex flex-col space-y-4">
+                <button
+                  (click)="addToCart(product)"
+                  [disabled]="product.stock === 0"
+                  class="flex items-center justify-center w-full py-4 px-6 rounded-lg font-bold text-lg transition-all"
+                  [class.bg-indigo-600]="product.stock > 0"
+                  [class.hover:bg-indigo-700]="product.stock > 0"
+                  [class.text-white]="product.stock > 0"
+                  [class.bg-gray-200]="product.stock === 0"
+                  [class.text-gray-500]="product.stock === 0"
+                  [class.cursor-not-allowed]="product.stock === 0"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  Añadir al carrito
+                </button>
+
+                <a
+                  routerLink="/catalog"
+                  class="text-center text-gray-500 hover:text-gray-700 font-medium py-2"
+                >
+                  Seguir comprando
+                </a>
+              </div>
             </div>
-          } @empty {
-            <p class="muted">Aún no hay reseñas para este producto.</p>
-          }
+          </div>
         </div>
-      </div>
-    } @else {
-      <div class="empty-state">
-        Producto no encontrado. <a routerLink="/shop">Volver al catálogo</a>
-      </div>
-    }
-  </section>`,
+      } @else {
+        <div class="flex justify-center items-center h-96">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        </div>
+      }
+    </div>
+  `,
 })
-export class ProductDetailComponent {
-  private readonly route = inject(ActivatedRoute);
-  protected readonly catalog = inject(CatalogService);
-  private readonly auth = inject(AuthService);
-  protected readonly cart = inject(CartService);
-  protected readonly product = computed(() =>
-    this.catalog.byId(Number(this.route.snapshot.paramMap.get('id'))),
-  );
-  protected readonly showReviewForm = signal(false);
-  protected newReview = { rating: 5, comment: '' };
+export class ProductDetailComponent implements OnInit {
+  product$!: Observable<Product | undefined>;
 
-  protected submitReview(): void {
-    const p = this.product();
-    if (!p || !this.newReview.comment.trim()) return;
+  constructor(
+    private route: ActivatedRoute,
+    private productService: ProductService,
+    private cartService: CartService,
+  ) {}
 
-    this.catalog.addReview(p.id, {
-      user: this.auth.user()?.name || 'Cliente anónimo',
-      rating: Number(this.newReview.rating),
-      comment: this.newReview.comment,
-    });
-
-    this.newReview = { rating: 5, comment: '' };
-    this.showReviewForm.set(false);
+  ngOnInit(): void {
+    this.product$ = this.route.paramMap.pipe(
+      switchMap((params) => {
+        const id = Number(params.get('id'));
+        return this.productService.getProductById(id);
+      }),
+    );
   }
 
-  protected format(value: number): string {
-    return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'USD' }).format(value);
+  addToCart(product: Product): void {
+    this.cartService.addToCart(product);
   }
 }

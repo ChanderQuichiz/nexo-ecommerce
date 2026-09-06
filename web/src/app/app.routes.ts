@@ -1,7 +1,10 @@
 import { Routes } from '@angular/router';
-import { roleGuard } from './core/guards/role.guard';
+import { adminGuard } from './core/guards/admin.guard';
+import { rootGuard } from './core/guards/root.guard';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+  // Auth routes isolated from any layout
   {
     path: 'login',
     loadComponent: () => import('./features/auth/login.component').then((m) => m.LoginComponent),
@@ -11,25 +14,17 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/auth/register.component').then((m) => m.RegisterComponent),
   },
-  {
-    path: 'forgot-password',
-    loadComponent: () =>
-      import('./features/auth/forgot-password.component').then((m) => m.ForgotPasswordComponent),
-  },
+
+  // Store Layout (strictly for Clients/Guests)
   {
     path: '',
+    canActivate: [rootGuard],
     loadComponent: () =>
-      import('./shared/layout/app-layout.component').then((m) => m.AppLayoutComponent),
+      import('./features/layout/store-layout.component').then((m) => m.StoreLayoutComponent),
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'shop' },
+      { path: '', redirectTo: 'catalog', pathMatch: 'full' },
       {
-        path: 'shop',
-        loadComponent: () =>
-          import('./features/catalog/catalog.component').then((m) => m.CatalogComponent),
-      },
-      {
-        path: 'shop/offers',
-        data: { offers: true },
+        path: 'catalog',
         loadComponent: () =>
           import('./features/catalog/catalog.component').then((m) => m.CatalogComponent),
       },
@@ -41,77 +36,51 @@ export const routes: Routes = [
           ),
       },
       {
-        path: 'orders',
-        loadComponent: () =>
-          import('./features/orders/orders.component').then((m) => m.OrdersComponent),
-        canActivate: [roleGuard(['cliente'])],
-      },
-      {
         path: 'cart',
         loadComponent: () => import('./features/cart/cart.component').then((m) => m.CartComponent),
       },
       {
         path: 'checkout',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./features/checkout/checkout.component').then((m) => m.CheckoutComponent),
-        canActivate: [roleGuard(['cliente'])],
       },
       {
-        path: 'profile',
+        path: 'order-confirmation',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('./features/profile/profile.component').then((m) => m.ProfileComponent),
-        canActivate: [roleGuard(['cliente'])],
-      },
-    ],
-  },
-  {
-    path: 'operator',
-    loadComponent: () =>
-      import('./shared/layout/backoffice-layout.component').then(
-        (m) => m.BackofficeLayoutComponent,
-      ),
-    canActivate: [roleGuard(['operador', 'administrador'])],
-    children: [
-      { path: '', pathMatch: 'full', redirectTo: 'orders' },
-      {
-        path: 'orders',
-        loadComponent: () =>
-          import('./features/operator/operator.component').then((m) => m.OperatorComponent),
-      },
-      {
-        path: 'inventory',
-        loadComponent: () =>
-          import('./features/operator/inventory.component').then((m) => m.InventoryComponent),
-      },
-    ],
-  },
-  {
-    path: 'admin',
-    loadComponent: () =>
-      import('./shared/layout/backoffice-layout.component').then(
-        (m) => m.BackofficeLayoutComponent,
-      ),
-    canActivate: [roleGuard(['administrador'])],
-    children: [
-      { path: '', pathMatch: 'full', redirectTo: 'catalog' },
-      {
-        path: 'catalog',
-        loadComponent: () =>
-          import('./features/admin/admin.component').then((m) => m.AdminComponent),
-      },
-      {
-        path: 'orders',
-        loadComponent: () =>
-          import('./features/admin/order-management.component').then(
-            (m) => m.OrderManagementComponent,
+          import('./features/checkout/order-confirmation.component').then(
+            (m) => m.OrderConfirmationComponent,
           ),
       },
       {
-        path: 'users',
+        path: 'orders',
+        canActivate: [authGuard],
         loadComponent: () =>
-          import('./features/admin/users.component').then((m) => m.UsersComponent),
+          import('./features/orders/order-history.component').then((m) => m.OrderHistoryComponent),
       },
     ],
   },
-  { path: '**', redirectTo: 'shop' },
+
+  // Admin Layout (Strictly for Admins)
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    loadComponent: () =>
+      import('./features/admin/admin-layout.component').then((m) => m.AdminLayoutComponent),
+    children: [
+      {
+        path: 'products',
+        loadComponent: () =>
+          import('./features/admin/admin-products.component').then((m) => m.AdminProductsComponent),
+      },
+      {
+        path: 'orders',
+        loadComponent: () =>
+          import('./features/admin/admin-orders.component').then((m) => m.AdminOrdersComponent),
+      },
+      { path: '', redirectTo: 'products', pathMatch: 'full' },
+    ],
+  },
+  { path: '**', redirectTo: '' },
 ];
