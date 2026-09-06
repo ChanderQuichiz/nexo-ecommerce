@@ -1,0 +1,14 @@
+@startuml der_auth_service
+!theme plain
+hide circle
+skinparam linetype ortho
+
+entity "USERS" as USERS {
+  *id : string <<PK>>
+  --
+  email : string
+  name : string
+  role : string
+}
+
+@enduml

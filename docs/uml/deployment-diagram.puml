@@ -1,0 +1,43 @@
+@startuml arquitectura_k8s_kong
+!theme plain
+skinparam componentStyle rectangle
+
+component "Ecommerce Web\nAngular" as web
+
+package "Clúster Kubernetes\n(namespace: ecommerce)" {
+
+  component "Kong Gateway\nAPI Gateway" as kong
+
+  component "Auth\nSpring Boot" as auth
+  component "Catalog\nSpring Boot" as catalog
+  component "Notifications\nSpring Boot" as notif
+  component "Orders\nSpring Boot" as orders
+
+  database "Auth DB\nPostgreSQL" as authdb
+  database "Catalog DB\nMongoDB" as catalogdb
+  database "Notif. DB\nMongoDB" as notifdb
+  database "Orders DB\nPostgreSQL" as ordersdb
+
+  queue "Message broker\nKafka / RabbitMQ" as broker
+
+  kong --> auth
+  kong --> catalog
+  kong --> notif
+  kong --> orders
+
+  auth --> authdb
+  catalog --> catalogdb
+  notif --> notifdb
+  orders --> ordersdb
+
+  ordersdb ..> broker : publica: OrderCreated
+  broker ..> notifdb : consume evento
+}
+
+web --> kong
+
+note bottom of broker
+  punteado = comunicación asíncrona por eventos
+end note
+
+@enduml
