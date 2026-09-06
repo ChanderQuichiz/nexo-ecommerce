@@ -89,10 +89,17 @@ components:
           type: string
         userId:
           type: string
+        subtotal:
+          type: number
+        shippingFee:
+          type: number
+        tax:
+          type: number
         total:
           type: number
         status:
           type: string
+          enum: [pending, Pagado, En preparación, Enviado, Entregado, cancelled]
         date:
           type: string
           format: date-time
@@ -135,3 +142,4 @@ components:
             cardNumber: { type: string }
             expiry: { type: string }
             cvv: { type: string }
+      required: [items, shippingAddress, paymentInfo]
