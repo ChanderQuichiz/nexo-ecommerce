@@ -53,6 +53,61 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Order'
+  /{id}:
+    get:
+      summary: Get order details by ID
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '404':
+          description: Order not found
+  /cart:
+    get:
+      summary: Get current persistent cart (from Redis)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of items in cart
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrderItem'
+    post:
+      summary: Sync/Update cart items (to Redis)
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/OrderItem'
+      responses:
+        '200':
+          description: Cart synchronized
+    delete:
+      summary: Clear cart after checkout
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Cart emptied
   /{id}/status:
     patch:
       summary: Update order status (Admin)

@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec745a71-00e6-4090-8915-97c0faa35579" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/docs/uml/deployment-diagram.puml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/uml/der-auth-service.puml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/uml/der-orders-service.puml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="ec745a71-00e6-4090-8915-97c0faa35579" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -45,6 +40,12 @@
     &quot;last_opened_file_path&quot;: &quot;/Users/chanderquichiz/Documents/ecommerce&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/docs/openapi" />
+      <recent name="$PROJECT_DIR$/docs/uml/erd" />
+    </key>
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="ec745a71-00e6-4090-8915-97c0faa35579" name="Changes" comment="" />

@@ -1,25 +1,11 @@
 openapi: 3.0.3
 info:
   title: Notifications Service
-  description: Handles email notifications and receipt generation.
+  description: Handles order receipt generation.
   version: 1.0.0
 servers:
   - url: https://api.ecommerce.com/notifications
 paths:
-  /send-confirmation:
-    post:
-      summary: Send order confirmation email
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                orderId: { type: string }
-                userEmail: { type: string }
-      responses:
-        '202':
-          description: Email queued
   /generate-receipt/{orderId}:
     get:
       summary: Generate and download electronic receipt (PDF)

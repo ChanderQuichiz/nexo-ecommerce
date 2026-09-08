@@ -72,6 +72,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+  /logout:
+    post:
+      summary: Revoke session (Logout)
+      security:
+        - BearerAuth: []
+      description: Adds the current JWT to a blocklist in Redis to prevent further use.
+      responses:
+        '204':
+          description: Session revoked successfully
 components:
   securitySchemes:
     BearerAuth:
