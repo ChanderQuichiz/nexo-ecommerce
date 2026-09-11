@@ -10,7 +10,7 @@ CREATE TABLE orders (
   address VARCHAR(255) NOT NULL,
   city VARCHAR(100) NOT NULL,
   phone VARCHAR(20) NOT NULL,
-  stripe_payment_intent_id VARCHAR(255) -- Sin NOT NULL para permitir el guardado inicial
+  stripe_payment_intent_id VARCHAR(255)
 );
 
 CREATE TABLE order_items (
