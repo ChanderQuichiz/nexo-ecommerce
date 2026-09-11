@@ -2,6 +2,7 @@ package com.nexo.ecommerce.orders.order_items;
 
 import java.math.BigDecimal;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -18,9 +19,12 @@ public class OrderItemsEntity {
     @GeneratedValue(generator = "uuid2")
     private String id;
 
+    @Column(name = "order_id")
     private String orderId;
     
+    @Column(name = "product_id")
     private Long productId;
+
     private String name;
     private BigDecimal price;
     private Integer quantity;
