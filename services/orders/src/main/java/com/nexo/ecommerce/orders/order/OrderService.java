@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.nexo.ecommerce.orders.catalog_client.CatalogClient;
+import com.nexo.ecommerce.orders.catalog_client.dto.GetProduct;
 import com.nexo.ecommerce.orders.catalog_client.dto.ItemsValidateStock;
 import com.nexo.ecommerce.orders.catalog_client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.catalog_client.dto.ValidateStockResponse;
