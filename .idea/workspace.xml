@@ -4,7 +4,52 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ec745a71-00e6-4090-8915-97c0faa35579" name="Changes" comment="" />
+    <list default="true" id="ec745a71-00e6-4090-8915-97c0faa35579" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.github/workflows/main-ci.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/reusable-java-ci.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/markdown.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.vscode/settings.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/.gitattributes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/docker-compose.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/mvnw" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/mvnw.cmd" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/OrdersApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/catalog_client/CatalogClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/catalog_client/dto/GetProduct.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/catalog_client/dto/ItemsValidateStock.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/catalog_client/dto/ValidateStockRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/catalog_client/dto/ValidateStockResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/OrderController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/OrderEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/OrderRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/OrderService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/dto/CreateOrderItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/dto/CreateOrderRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/dto/GetOrderResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/dto/OrderItem.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/dto/OrderItemRow.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/dto/ShippingAddress.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/dto/UpdateOrderStatusRequest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order_items/OrderItemsEntity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order_items/OrderItemsRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/stripe/StripeController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/stripe/StripeService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/resources/application.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/main/resources/db/migration/V1__Init.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/test/java/com/nexo/ecommerce/orders/BaseIntegrationTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/test/java/com/nexo/ecommerce/orders/TestOrdersApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/test/java/com/nexo/ecommerce/orders/config/TestcontainersConfiguration.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/test/java/com/nexo/ecommerce/orders/order/OrderControllerIT.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/test/java/com/nexo/ecommerce/orders/order/OrderServiceTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/orders/src/test/resources/application-test.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/openapi/orders-service.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docs/openapi/orders-service.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/web/.gitignore" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,21 +70,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
-    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
-    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/chanderquichiz/Documents/ecommerce&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "feature/order-service",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/chanderquichiz/Documents/ecommerce"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/docs/openapi" />
