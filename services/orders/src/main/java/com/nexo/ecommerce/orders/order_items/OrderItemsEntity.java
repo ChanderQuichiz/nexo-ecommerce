@@ -5,10 +5,10 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+@Entity
 @Table(name = "order_items")
-@Entity 
-@Getter 
-@Setter 
+@Getter
+@Setter
 public class OrderItemsEntity {
     @Id 
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -17,10 +17,15 @@ public class OrderItemsEntity {
     @Column(name = "order_id", nullable = false)
     private String orderId;
     
-    @Column(name = "product_id")
+    @Column(name = "product_id", nullable = false)
     private Long productId;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private BigDecimal price;
+
+    @Column(nullable = false)
     private Integer quantity;
 }

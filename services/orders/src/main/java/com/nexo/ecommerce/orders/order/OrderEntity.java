@@ -31,7 +31,7 @@ public class OrderEntity {
     @Column(nullable = false)
     private BigDecimal total;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String status;
 
     @CreationTimestamp 
@@ -41,10 +41,10 @@ public class OrderEntity {
     @Column(nullable = false)
     private String address;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String city;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String phone;
 
     @Column(name = "stripe_payment_intent_id")
