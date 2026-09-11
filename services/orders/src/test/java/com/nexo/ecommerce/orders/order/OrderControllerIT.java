@@ -8,7 +8,6 @@ import com.nexo.ecommerce.orders.catalog_client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.catalog_client.dto.ValidateStockResponse;
 import com.nexo.ecommerce.orders.order.dto.CreateOrderItem;
 import com.nexo.ecommerce.orders.order.dto.CreateOrderRequest;
-import com.nexo.ecommerce.orders.order.dto.UpdateOrderStatusRequest;
 import com.nexo.ecommerce.orders.order_items.OrderItemsRepository;
 import com.nexo.ecommerce.orders.stripe.StripeService;
 import com.stripe.model.PaymentIntent;
@@ -89,14 +88,14 @@ class OrderControllerIT extends BaseIntegrationTest {
     void deberiaObtenerOrdenPorId() {
         OrderEntity order = new OrderEntity();
         order.setUserId("user-123");
-        order.setSubtotal(new BigDecimal("150.00"));
+        order.setSubtotal(new BigDecimal("100.00"));
         order.setShippingFee(new BigDecimal("10.00"));
-        order.setTax(new BigDecimal("27.00"));
-        order.setTotal(new BigDecimal("187.00"));
+        order.setTax(new BigDecimal("18.00"));
+        order.setTotal(new BigDecimal("128.00"));
         order.setStatus("PAID");
-        order.setAddress("Calle 1");
-        order.setCity("Lima");
-        order.setPhone("123");
+        order.setAddress("Calle Falsa 123");
+        order.setCity("Springfield");
+        order.setPhone("555-1234");
         orderRepository.save(order);
 
         webTestClient.get()
@@ -110,15 +109,15 @@ class OrderControllerIT extends BaseIntegrationTest {
 
     @Test
     void deberiaObtenerTodasLasOrdenes() {
-        OrderEntity order1 = new OrderEntity();
-        order1.setUserId("user-1");
-        order1.setSubtotal(BigDecimal.TEN);
-        order1.setShippingFee(BigDecimal.ZERO);
-        order1.setTax(BigDecimal.ONE);
-        order1.setTotal(BigDecimal.TEN);
-        order1.setStatus("PAID");
-        order1.setAddress("A"); order1.setCity("B"); order1.setPhone("C");
-        orderRepository.save(order1);
+        OrderEntity order = new OrderEntity();
+        order.setUserId("user-1");
+        order.setSubtotal(new BigDecimal("100.00"));
+        order.setShippingFee(new BigDecimal("10.00"));
+        order.setTax(new BigDecimal("18.00"));
+        order.setTotal(new BigDecimal("128.00"));
+        order.setStatus("PAID");
+        order.setAddress("Address"); order.setCity("City"); order.setPhone("123");
+        orderRepository.save(order);
 
         webTestClient.get()
                 .uri("/orders")

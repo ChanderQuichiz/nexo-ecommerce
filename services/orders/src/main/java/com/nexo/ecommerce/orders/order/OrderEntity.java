@@ -19,20 +19,32 @@ public class OrderEntity {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Column(nullable = false)
     private BigDecimal subtotal;
 
-    @Column(name = "shipping_fee")
+    @Column(name = "shipping_fee", nullable = false)
     private BigDecimal shippingFee;
 
+    @Column(nullable = false)
     private BigDecimal tax;
+
+    @Column(nullable = false)
     private BigDecimal total;
+
+    @Column(nullable = false)
     private String status;
 
     @CreationTimestamp 
+    @Column(nullable = false, updatable = false)
     private LocalDateTime date;
 
+    @Column(nullable = false)
     private String address;
+
+    @Column(nullable = false)
     private String city;
+
+    @Column(nullable = false)
     private String phone;
 
     @Column(name = "stripe_payment_intent_id")
