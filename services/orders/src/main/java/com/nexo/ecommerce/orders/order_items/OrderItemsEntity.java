@@ -1,11 +1,10 @@
 package com.nexo.ecommerce.orders.order_items;
 
+import java.math.BigDecimal;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,11 +15,13 @@ import lombok.Setter;
 @Setter 
 public class OrderItemsEntity {
     @Id 
-    @GeneratedValue
+    @GeneratedValue(generator = "uuid2")
     private String id;
-    @ManyToOne
-    @JoinColumn(name = "orderId", referencedColumnName = "id")
+
     private String orderId;
+    
     private Long productId;
+    private String name;
+    private BigDecimal price;
     private Integer quantity;
 }

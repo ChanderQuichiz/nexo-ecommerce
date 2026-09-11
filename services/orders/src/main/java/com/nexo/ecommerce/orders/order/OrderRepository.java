@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.nexo.ecommerce.orders.order.dto.GetOrderResponse;
+
+import jakarta.transaction.Transactional;
 
 public interface OrderRepository extends JpaRepository<OrderEntity, String> {
     
@@ -70,12 +73,14 @@ public interface OrderRepository extends JpaRepository<OrderEntity, String> {
 """)
     List<GetOrderResponse> getAllOrdersByUserId(@Param("userId") String userId);
 
+    @Modifying
+    @Transactional
     @Query ("""
     UPDATE OrderEntity o
     SET o.status = :status
     WHERE o.id = :orderId
 """)
-    void updateOrderStatus(String orderId, String status);
+    void updateOrderStatus(@Param("orderId") String orderId, @Param("status") String status);
 
     @Query ("""
     SELECT o

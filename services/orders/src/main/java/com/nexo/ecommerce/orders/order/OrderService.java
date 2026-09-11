@@ -2,6 +2,7 @@ package com.nexo.ecommerce.orders.order;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -110,13 +111,22 @@ public class OrderService {
             }
         }
         
-        // 2. Calcular montos
-        BigDecimal subtotal = orderItems.stream()
-            .map(item -> {
-                BigDecimal price = this.catalogClient.getProductById(item.productId()).price();
-                return price.multiply(BigDecimal.valueOf(item.quantity()));
-            })
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
+        // 2. Calcular montos y preparar ítems
+        BigDecimal subtotal = BigDecimal.ZERO;
+        List<OrderItemsEntity> itemsToSave = new ArrayList<>();
+
+        for (CreateOrderItem item : orderItems) {
+            GetProduct product = this.catalogClient.getProductById(item.productId());
+            BigDecimal itemPrice = product.price();
+            subtotal = subtotal.add(itemPrice.multiply(BigDecimal.valueOf(item.quantity())));
+
+            OrderItemsEntity orderItemEntity = new OrderItemsEntity();
+            orderItemEntity.setProductId(item.productId());
+            orderItemEntity.setName(product.name());
+            orderItemEntity.setPrice(itemPrice);
+            orderItemEntity.setQuantity(item.quantity());
+            itemsToSave.add(orderItemEntity);
+        }
 
         BigDecimal tax = subtotal.multiply(interestRate).setScale(2, RoundingMode.HALF_UP);
         BigDecimal total = subtotal.add(tax).add(shippingFee).setScale(2, RoundingMode.HALF_UP);
@@ -137,12 +147,9 @@ public class OrderService {
 
         orderRepository.save(orderEntity);
 
-        for (CreateOrderItem item : orderItems) {
-            OrderItemsEntity orderItemEntity = new OrderItemsEntity();
-            orderItemEntity.setOrderId(orderEntity.getId());
-            orderItemEntity.setProductId(item.productId());
-            orderItemEntity.setQuantity(item.quantity());
-            orderItemsRepository.save(orderItemEntity);
+        for (OrderItemsEntity itemEntity : itemsToSave) {
+            itemEntity.setOrderId(orderEntity.getId());
+            orderItemsRepository.save(itemEntity);
         }
 
         // 4. Integración con Stripe

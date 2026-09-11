@@ -18,7 +18,7 @@ import lombok.Setter;
 @Setter
 public class OrderEntity {
     @Id 
-    @GeneratedValue
+    @GeneratedValue(generator = "uuid2")
     private String id;
 
     private String userId;
