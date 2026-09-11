@@ -31,6 +31,7 @@ import com.nexo.ecommerce.orders.catalog_client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.catalog_client.dto.ValidateStockResponse;
 import com.nexo.ecommerce.orders.order.dto.CreateOrderItem;
 import com.nexo.ecommerce.orders.order.dto.CreateOrderRequest;
+import com.nexo.ecommerce.orders.order.dto.CreateOrderResponse;
 import com.nexo.ecommerce.orders.order.dto.GetOrderResponse;
 import com.nexo.ecommerce.orders.order.dto.OrderItem;
 import com.nexo.ecommerce.orders.order.dto.OrderItemRow;
@@ -164,13 +165,12 @@ class OrderServiceTest {
 
             PaymentIntent mockPaymentIntent = mock(PaymentIntent.class);
             when(mockPaymentIntent.getId()).thenReturn("pi_mock_123");
-            when(mockPaymentIntent.getClientSecret()).thenReturn("pi_mock_123_secret_abc");
 
-            when(stripeService.createPaymentIntent(24600L)).thenReturn(mockPaymentIntent);
+            lenient().when(stripeService.createPaymentIntent(anyLong())).thenReturn(mockPaymentIntent);
 
-            String clientSecret = orderService.createOrder(userId, request);
+            CreateOrderResponse response = orderService.createOrder(userId, request);
 
-            assertEquals("pi_mock_123_secret_abc", clientSecret);
+            assertEquals("pi_mock_123", response.paymentIntentId());
             verify(orderRepository, times(2)).save(any(OrderEntity.class));
             verify(orderItemsRepository, times(1)).save(any(OrderItemsEntity.class));
             verify(stripeService).createPaymentIntent(24600L);

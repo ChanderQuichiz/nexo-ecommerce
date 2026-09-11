@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nexo.ecommerce.orders.order.dto.CreateOrderRequest;
+import com.nexo.ecommerce.orders.order.dto.CreateOrderResponse;
 import com.nexo.ecommerce.orders.order.dto.GetOrderResponse;
 import com.nexo.ecommerce.orders.order.dto.UpdateOrderStatusRequest;
 
@@ -53,9 +54,9 @@ public class OrderController {
 
 
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestHeader("X-User-ID") String userId, @RequestBody CreateOrderRequest request) {
-        String paymentIntentId = orderService.createOrder(userId, request);
-        return ResponseEntity.ok(paymentIntentId);
+    public ResponseEntity<CreateOrderResponse> createOrder(@RequestHeader("X-User-ID") String userId, @RequestBody CreateOrderRequest request) {
+        CreateOrderResponse response = orderService.createOrder(userId, request);
+        return ResponseEntity.ok(response);
     }
 
 }

@@ -68,7 +68,6 @@ class OrderControllerIT extends BaseIntegrationTest {
 
         PaymentIntent paymentIntent = mock(PaymentIntent.class);
         when(paymentIntent.getId()).thenReturn("pi_123");
-        when(paymentIntent.getClientSecret()).thenReturn("pi_secret_test_123");
         when(stripeService.createPaymentIntent(anyLong())).thenReturn(paymentIntent);
 
         webTestClient.post()
@@ -78,8 +77,8 @@ class OrderControllerIT extends BaseIntegrationTest {
                 .bodyValue(request)
                 .exchange()
                 .expectStatus().isOk()
-                .expectBody(String.class)
-                .isEqualTo("pi_secret_test_123");
+                .expectBody()
+                .jsonPath("$.paymentIntentId").isEqualTo("pi_123");
 
         assertThat(orderRepository.count()).isEqualTo(1);
     }
