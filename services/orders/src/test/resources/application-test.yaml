@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+constants:
+  interest-rate: 0.18
+  shipping-fee: 10.00
+  currency: USD
+
+stripe:
+  api-key: mock_key
+  webhook:
+    secret: mock_secret

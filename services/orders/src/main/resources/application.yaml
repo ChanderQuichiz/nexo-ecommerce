@@ -1,0 +1,45 @@
+spring:
+    application:
+        name: orders-service
+    datasource:
+        url: ${DATABASE_URL}
+        username: ${DATABASE_USERNAME}
+        password: ${DATABASE_PASSWORD}
+
+    flyway:
+        enabled: true
+        baseline-on-migrate: true
+        validate-on-migrate: true
+        clean-disabled: true          # seguridad: nunca permitir borrar todo el esquema
+        locations: classpath:db/migration
+
+    jpa:
+        hibernate:
+            ddl-auto: validate          # Hibernate NO crea/modifica tablas, solo valida
+        show-sql: true
+        
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      catalog-service:
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+
+constants:
+  interest-rate: ${INTEREST_RATE}
+  shipping-fee: ${SHIPPING_FEE}
+  currency: ${CURRENCY}
+stripe:
+  api-key: ${STRIPE_API_KEY}
+  webhook:
+    secret: ${STRIPE_WEBHOOK_SECRET}
