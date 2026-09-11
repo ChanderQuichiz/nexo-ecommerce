@@ -36,10 +36,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
+                $ref: '#/components/schemas/StripePaymentIntent'
         '409':
           description: Insufficient stock (HU-13)
-  /my:
+  /me:
     get:
       summary: Get current user's order history
       security:
@@ -127,12 +127,9 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/OrderItem'
-        shippingAddress:
-          type: object
-          properties:
-            address: { type: string }
-            city: { type: string }
-            phone: { type: string }
+        address: { type: string }
+        city: { type: string }
+        phone: { type: string }
     OrderItem:
       type: object
       description: Snapshot of product at time of purchase
@@ -151,16 +148,13 @@ components:
             properties:
               productId: { type: integer }
               quantity: { type: integer }
-        shippingAddress:
+        address: { type: string }
+        city: { type: string }
+        phone: { type: string }
+       
+      required: [items, shippingAddress]
+    StripePaymentIntent:
           type: object
+          description: Snapshot of product at time of purchase
           properties:
-            address: { type: string }
-            city: { type: string }
-            phone: { type: string }
-        paymentInfo:
-          type: object
-          properties:
-            cardNumber: { type: string }
-            expiry: { type: string }
-            cvv: { type: string }
-      required: [items, shippingAddress, paymentInfo]
+            paymentIntentId: { type: string }

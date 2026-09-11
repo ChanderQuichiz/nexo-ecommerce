@@ -19,6 +19,7 @@ import com.nexo.ecommerce.orders.catalog_client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.catalog_client.dto.ValidateStockResponse;
 import com.nexo.ecommerce.orders.order.dto.CreateOrderItem;
 import com.nexo.ecommerce.orders.order.dto.CreateOrderRequest;
+import com.nexo.ecommerce.orders.order.dto.CreateOrderResponse;
 import com.nexo.ecommerce.orders.order.dto.GetOrderResponse;
 import com.nexo.ecommerce.orders.order.dto.OrderItem;
 import com.nexo.ecommerce.orders.order.dto.OrderItemRow;
@@ -99,8 +100,7 @@ public class OrderService {
         orderRepository.updateOrderStatus(orderId, status);
     }
 
-    @Transactional
-    public String createOrder(String userId, CreateOrderRequest request) {
+    public CreateOrderResponse createOrder(String userId, CreateOrderRequest request) {
         List<CreateOrderItem> orderItems = request.items();
 
         // 1. Validar stock
@@ -158,7 +158,7 @@ public class OrderService {
             PaymentIntent paymentIntent = this.stripeService.createPaymentIntent(priceInCents);
             orderEntity.setStripePaymentIntentId(paymentIntent.getId());
             orderRepository.save(orderEntity);
-            return paymentIntent.getClientSecret();
+            return new CreateOrderResponse(paymentIntent.getId());
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.PAYMENT_REQUIRED, "Stripe Error: " + e.getMessage());
         }
