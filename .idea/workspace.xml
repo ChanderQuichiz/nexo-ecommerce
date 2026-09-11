@@ -5,17 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ec745a71-00e6-4090-8915-97c0faa35579" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/deviceManager.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/ecommerce.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/markdown.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.vscode/settings.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/OrderEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order/OrderEntity.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order_items/OrderItemsEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/services/orders/src/main/java/com/nexo/ecommerce/orders/order_items/OrderItemsEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/orders/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/services/orders/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
