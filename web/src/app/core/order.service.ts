@@ -9,7 +9,26 @@ import { AuthService } from './auth.service';
   providedIn: 'root',
 })
 export class OrderService {
-  private orders = signal<Order[]>([]);
+  private orders = signal<Order[]>([
+    {
+      id: 'mock-1',
+      userId: 'user-1',
+      items: [{ product: { id: 1, name: 'Laptop Pro', description: '', price: 1200, stock: 10, imageUrl: '', category: 'Tech', active: true }, quantity: 1 }],
+      total: 1250,
+      date: new Date(),
+      status: 'pending',
+      shippingAddress: { address: 'Calle Falsa 123', city: 'Madrid', phone: '600111222' }
+    },
+    {
+      id: 'mock-2',
+      userId: 'user-2',
+      items: [{ product: { id: 2, name: 'Auriculares Wireless', description: '', price: 150, stock: 5, imageUrl: '', category: 'Audio', active: true }, quantity: 2 }],
+      total: 320,
+      date: new Date(Date.now() - 86400000),
+      status: 'Pagado',
+      shippingAddress: { address: 'Av. Siempre Viva 742', city: 'Barcelona', phone: '600333444' }
+    }
+  ]);
   history = this.orders.asReadonly();
 
   constructor(

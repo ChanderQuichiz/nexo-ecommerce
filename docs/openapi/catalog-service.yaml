@@ -211,3 +211,5 @@ components:
           type: integer
         category:
           type: string
+        active:
+          type: boolean
