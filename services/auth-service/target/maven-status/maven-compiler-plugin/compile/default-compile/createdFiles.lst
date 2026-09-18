@@ -1,0 +1,16 @@
+com\nexo\ecommerce\auth\domain\UserRepository.class
+com\nexo\ecommerce\auth\application\dto\RegisterRequest.class
+com\nexo\ecommerce\auth\AuthServiceApplication.class
+com\nexo\ecommerce\auth\application\dto\LoginRequest.class
+com\nexo\ecommerce\auth\infrastructure\security\CustomUserDetailsService.class
+com\nexo\ecommerce\auth\infrastructure\security\JwtAuthenticationFilter.class
+com\nexo\ecommerce\auth\domain\Role.class
+com\nexo\ecommerce\auth\infrastructure\rest\AuthController.class
+com\nexo\ecommerce\auth\infrastructure\security\JwtTokenService.class
+com\nexo\ecommerce\auth\application\dto\UserResponse.class
+com\nexo\ecommerce\auth\domain\User.class
+com\nexo\ecommerce\auth\application\AuthService.class
+com\nexo\ecommerce\auth\infrastructure\rest\ApiExceptionHandler.class
+com\nexo\ecommerce\auth\application\dto\AuthResponse.class
+com\nexo\ecommerce\auth\infrastructure\security\SecurityConfig.class
+com\nexo\ecommerce\auth\infrastructure\security\TokenRevocationService.class

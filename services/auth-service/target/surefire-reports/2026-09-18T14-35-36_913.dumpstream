@@ -1,0 +1,5 @@
+# Created at 2026-09-18T14:35:37.055
+Boot Manifest-JAR contains absolute paths in classpath 'D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO GRUPAL AVANCE 18-09-2026\nexo-ecommerce-main\services\auth-service\target\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

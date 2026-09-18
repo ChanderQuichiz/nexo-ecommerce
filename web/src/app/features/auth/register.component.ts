@@ -85,10 +85,14 @@ import { AuthService } from '../../core/auth.service';
             <p class="text-xs text-red-500 italic mt-1">Las contraseñas no coinciden</p>
           }
 
+          @if (password && password.length < 8) {
+            <p class="text-xs text-red-500 italic mt-1">La contraseña debe tener al menos 8 caracteres</p>
+          }
+
           <div>
             <button
               type="submit"
-              [disabled]="loading || password !== confirmPassword"
+              [disabled]="loading || password !== confirmPassword || password.length < 8"
               class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all shadow-lg shadow-indigo-100 disabled:opacity-50"
             >
               @if (loading) {
@@ -119,8 +123,13 @@ export class RegisterComponent {
   ) {}
 
   onSubmit(): void {
-    if (!this.name || !this.email || !this.password || this.password !== this.confirmPassword)
+    if (!this.name || !this.email || !this.password || this.password.length < 8) {
       return;
+    }
+
+    if (this.password !== this.confirmPassword) {
+      return;
+    }
 
     this.loading = true;
 

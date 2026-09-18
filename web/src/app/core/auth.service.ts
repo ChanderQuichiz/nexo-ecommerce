@@ -9,6 +9,7 @@ import { delay } from 'rxjs/operators';
 export class AuthService {
   private currentUserSignal = signal<User | null>(null);
   currentUser = this.currentUserSignal.asReadonly();
+  private readonly USERS_KEY = 'mock_users';
 
   constructor() {
     // Check localStorage for existing session
@@ -21,30 +22,62 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
-    // Mock login logic
+    const demoUsers = this.getStoredUsers();
+    const storedUser = demoUsers.find((user) => user.email.toLowerCase() === email.toLowerCase());
+
+    if (storedUser && storedUser.password === password) {
+      const response: AuthResponse = {
+        user: { id: storedUser.id, email: storedUser.email, name: storedUser.name, role: storedUser.role },
+        token: `mock-jwt-token-${storedUser.id}`,
+      };
+      this.setSession(response);
+      return of(response).pipe(delay(500));
+    }
+
     if (email === 'admin@ecommerce.com' && password === 'admin123') {
       const response: AuthResponse = {
-        user: { id: '1', email, name: 'Admin User', role: 'Admin' },
+        user: { id: '1', email, name: 'Usuario Administrador', role: 'Admin' },
         token: 'mock-jwt-token-admin',
       };
       this.setSession(response);
       return of(response).pipe(delay(500));
     } else if (email === 'client@ecommerce.com' && password === 'client123') {
       const response: AuthResponse = {
-        user: { id: '2', email, name: 'Client User', role: 'Client' },
+        user: { id: '2', email, name: 'Usuario Cliente', role: 'Client' },
         token: 'mock-jwt-token-client',
       };
       this.setSession(response);
       return of(response).pipe(delay(500));
     }
-    return throwError(() => new Error('Invalid credentials'));
+    return throwError(() => new Error('Credenciales inválidas'));
   }
 
   register(name: string, email: string, password: string): Observable<AuthResponse> {
-    // Mock registration logic
+    if (!password || password.length < 8) {
+      return throwError(() => new Error('La contraseña debe tener al menos 8 caracteres'));
+    }
+
+    const users = this.getStoredUsers();
+    const alreadyExists = users.some((user) => user.email.toLowerCase() === email.toLowerCase());
+
+    if (alreadyExists) {
+      return throwError(() => new Error('Este correo ya está registrado'));
+    }
+
+    const newUser = {
+      id: Date.now().toString(),
+      email,
+      name,
+      password,
+      role: 'Client' as const,
+    };
+
+    users.push(newUser);
+    localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+
     const response: AuthResponse = {
-      user: { id: Date.now().toString(), email, name, role: 'Client' },
-      token: 'mock-jwt-token-new',
+      user: { id: newUser.id, email, name, role: 'Client' },
+      token: `mock-jwt-token-${newUser.id}`,
     };
     this.setSession(response);
     return of(response).pipe(delay(500));
@@ -56,6 +89,23 @@ export class AuthService {
       localStorage.removeItem('token');
     }
     this.currentUserSignal.set(null);
+  }
+
+  private getStoredUsers(): Array<{ id: string; email: string; name: string; password: string; role: 'Client' | 'Admin' }> {
+    if (typeof window === 'undefined') {
+      return [];
+    }
+
+    const savedUsers = localStorage.getItem(this.USERS_KEY);
+    if (!savedUsers) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(savedUsers) as Array<{ id: string; email: string; name: string; password: string; role: 'Client' | 'Admin' }>;
+    } catch {
+      return [];
+    }
   }
 
   private setSession(auth: AuthResponse): void {
