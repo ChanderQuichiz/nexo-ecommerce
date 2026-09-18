@@ -1,0 +1,25 @@
+openapi: 3.0.3
+info:
+  title: Notifications Service
+  description: Handles order receipt generation.
+  version: 1.0.0
+servers:
+  - url: https://api.ecommerce.com/notifications
+paths:
+  /generate-receipt/{orderId}:
+    get:
+      summary: Generate and download electronic receipt (PDF)
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: PDF Receipt
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary

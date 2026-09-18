@@ -1,0 +1,2 @@
+com\nexo\ecommerce\auth\integration\AuthControllerIntegrationTest.class
+com\nexo\ecommerce\auth\unit\JwtTokenServiceTest.class

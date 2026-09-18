@@ -1,0 +1,13 @@
+name: catalog-service CI Workflow
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - services/catalog
+jobs:
+  job1wnoifdnofi:
+    uses: ./.github/workflows/reusable-java-ci.yml
+    with:
+      service_name: 'Catalog Service'
+      service_path: 'services/catalog'
