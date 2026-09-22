@@ -1,14 +1,14 @@
 openapi: 3.0.3
 info:
   title: Orders Service
-  description: Handles order creation, checkout, and persistent cart management.
+  description: Handles order creation, checkout, payment intents, webhooks, and order management.
   version: 1.0.0
 servers:
   - url: https://api.ecommerce.com/orders
 paths:
   /:
     get:
-      summary: List all orders (Admin)
+      summary: List all orders
       security:
         - BearerAuth: []
       responses:
@@ -31,19 +31,25 @@ paths:
             schema:
               $ref: '#/components/schemas/OrderCreate'
       responses:
-        '201':
+        '200':
           description: Order placed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/StripePaymentIntent'
-        '409':
-          description: Insufficient stock (HU-13)
+                $ref: '#/components/schemas/OrderCreateResponse'
+        '400':
+          description: Validation error or stock error
   /me:
     get:
       summary: Get current user's order history
       security:
         - BearerAuth: []
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: User's orders
@@ -75,7 +81,7 @@ paths:
           description: Order not found
   /{id}/status:
     patch:
-      summary: Update order status (Admin)
+      summary: Update order status
       security:
         - BearerAuth: []
       parameters:
@@ -85,17 +91,59 @@ paths:
           schema:
             type: string
       requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateStatusRequest'
+      responses:
+        '200':
+          description: Status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateStatusResponse'
+  /intent-payment:
+    post:
+      summary: Create payment intent for an order
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateIntentPaymentRequest'
+      responses:
+        '200':
+          description: Payment intent created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateIntentPaymentResponse'
+  /webhooks/stripe:
+    post:
+      summary: Stripe payment webhook receiver
+      parameters:
+        - name: Stripe-Signature
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                status:
-                  type: string
-                  enum: [pending, Pagado, En preparación, Enviado, Entregado, cancelled]
       responses:
         '200':
-          description: Status updated
+          description: Webhook received successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+
 components:
   securitySchemes:
     BearerAuth:
@@ -109,7 +157,7 @@ components:
           type: string
         userId:
           type: string
-        subtotal:
+        subTotal:
           type: number
         shippingFee:
           type: number
@@ -119,10 +167,9 @@ components:
           type: number
         status:
           type: string
-          enum: [pending, Pagado, En preparación, Enviado, Entregado, cancelled]
+          enum: [PENDING, PAID, FAILED, CANCELLED]
         date:
           type: string
-          format: date-time
         items:
           type: array
           items:
@@ -130,31 +177,49 @@ components:
         address: { type: string }
         city: { type: string }
         phone: { type: string }
+        paymentIntentId:
+          type: array
+          items:
+            type: string
     OrderItem:
       type: object
-      description: Snapshot of product at time of purchase
       properties:
-        productId: { type: integer }
-        name: { type: string }
+        productId: { type: string }
         price: { type: number }
         quantity: { type: integer }
     OrderCreate:
       type: object
       properties:
+        userId: { type: string }
+        address: { type: string }
+        city: { type: string }
+        phone: { type: string }
         items:
           type: array
           items:
             type: object
             properties:
-              productId: { type: integer }
+              productId: { type: string }
+              price: { type: number }
               quantity: { type: integer }
-        address: { type: string }
-        city: { type: string }
-        phone: { type: string }
-       
-      required: [items, shippingAddress]
-    StripePaymentIntent:
-          type: object
-          description: Snapshot of product at time of purchase
-          properties:
-            paymentIntentId: { type: string }
+    OrderCreateResponse:
+      type: object
+      properties:
+        message: { type: string }
+    UpdateStatusRequest:
+      type: object
+      properties:
+        status: { type: string }
+        orderId: { type: string }
+    UpdateStatusResponse:
+      type: object
+      properties:
+        message: { type: string }
+    CreateIntentPaymentRequest:
+      type: object
+      properties:
+        orderId: { type: string }
+    CreateIntentPaymentResponse:
+      type: object
+      properties:
+        intentId: { type: string }

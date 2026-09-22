@@ -13,6 +13,6 @@ constants:
   currency: USD
 
 stripe:
-  api-key: mock_key
+  apiKey: mock_key
   webhook:
-    secret: mock_secret
+    secret: ""

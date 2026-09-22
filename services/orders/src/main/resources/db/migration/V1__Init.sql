@@ -9,18 +9,24 @@ CREATE TABLE orders (
   date TIMESTAMP NOT NULL,
   address VARCHAR(255) NOT NULL,
   city VARCHAR(100) NOT NULL,
-  phone VARCHAR(20) NOT NULL,
-  stripe_payment_intent_id VARCHAR(255)
+  phone VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE order_payment_intent_id (
+  order_entity_jpa_id VARCHAR(255) NOT NULL,
+  payment_intent_id VARCHAR(255),
+  CONSTRAINT fk_order_payment_intent
+    FOREIGN KEY (order_entity_jpa_id)
+    REFERENCES orders(id)
 );
 
 CREATE TABLE order_items (
-  id VARCHAR(255) PRIMARY KEY,
-  order_id VARCHAR(255) NOT NULL,
-  product_id BIGINT NOT NULL,
-  name VARCHAR(255) NOT NULL,
-  price DECIMAL(10, 2) NOT NULL,
+  order_entity_jpa_id VARCHAR(255) NOT NULL,
+  product_id VARCHAR(255) NOT NULL,
   quantity INT NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
   CONSTRAINT fk_order_items_order
-    FOREIGN KEY (order_id)
+    FOREIGN KEY (order_entity_jpa_id)
     REFERENCES orders(id)
 );
+
