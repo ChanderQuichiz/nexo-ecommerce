@@ -1,4 +1,4 @@
-package com.nexo.ecommerce.orders.catalog_client;
+package com.nexo.ecommerce.orders.infrastructure.adapters;
 
 
 import org.springframework.cloud.openfeign.FeignClient;
@@ -13,7 +13,7 @@ import com.nexo.ecommerce.orders.application.client.dto.GetProduct;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
 
-@FeignClient(name = "catalog-service")
+@FeignClient(name = "catalog-service", url = "${catalog.service.url:http://localhost:8081}")
 public interface CatalogFeignClient extends CatalogClient {
 
     @PostMapping("/catalog/validate-stock")
@@ -24,7 +24,7 @@ public interface CatalogFeignClient extends CatalogClient {
     GetProduct getProductById(@PathVariable Long id);
     
 
-    @PatchMapping ("/catalog/{id}/stock")
-    Void reduceStock(@PathVariable Long id, @RequestBody Integer quantity);
+    @org.springframework.web.bind.annotation.PatchMapping("/catalog/{id}/stock")
+    Void reduceStock(@PathVariable("id") String id, @RequestBody Integer quantity);
 
 }

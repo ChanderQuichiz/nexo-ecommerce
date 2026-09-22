@@ -55,22 +55,24 @@ public class Order {
 
         Order order = new Order();
         order.id = new OrderId(java.util.UUID.randomUUID());
-        order.total = order.calculateTotal();
+        order.items = items;
         order.subtotal = order.calculateSubtotal();
         order.shippingFee = order.calculateShippingFee();
         order.tax = order.calculateTax();
+        order.total = order.calculateTotal();
         order.status = Status.PENDING;
         order.date = new Date(LocalDateTime.now());
         order.address = address;
         order.city = city;
         order.phone = phone;
         order.userId = userId;
-        order.items = items;
+        order.paymentIntentId = new java.util.ArrayList<>();
     
         return order;
     }
     public Order() {
         // Default constructor for JPA
+        this.paymentIntentId = new java.util.ArrayList<>();
     }
 public Order (OrderId id, UserId userId, SubTotal subtotal, ShippingFee shippingFee, Tax tax, Total total, Status status, Date date, Address address, City city, Phone phone, List<PaymentIntentId> paymentIntentId, List<Item> items) {
         this.id = id;
@@ -112,7 +114,8 @@ public Order (OrderId id, UserId userId, SubTotal subtotal, ShippingFee shipping
 
     public Tax calculateTax() {
         BigDecimal taxRate = new BigDecimal("0.07");
-        return new Tax(subtotal.value().multiply(taxRate));
+        BigDecimal taxVal = subtotal.value().multiply(taxRate).setScale(2, java.math.RoundingMode.HALF_UP);
+        return new Tax(taxVal);
     }
 
     public void addPaymentIntentId(PaymentIntentId paymentIntentId) {

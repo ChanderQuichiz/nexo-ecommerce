@@ -14,6 +14,6 @@ public interface CatalogClient {
     GetProduct getProductById( Long id);
     
 
-    Void reduceStock( Long id,Integer quantity);
+    Void reduceStock( String id,Integer quantity);
 
 }

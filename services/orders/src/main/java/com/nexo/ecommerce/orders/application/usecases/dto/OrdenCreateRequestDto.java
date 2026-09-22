@@ -1,4 +1,4 @@
-package com.nexo.ecommerce.orders.application.dto;
+package com.nexo.ecommerce.orders.application.usecases.dto;
 
 import java.math.BigDecimal;
 import java.util.List;

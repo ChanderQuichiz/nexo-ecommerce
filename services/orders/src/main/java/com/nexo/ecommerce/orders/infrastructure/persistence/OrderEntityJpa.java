@@ -44,6 +44,7 @@ public class OrderEntityJpa{
     private String phone;
 
     @ElementCollection 
+    @CollectionTable(name = "order_payment_intent_id")
     private List<String> paymentIntentId = new java.util.ArrayList<>();
 
 

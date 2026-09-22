@@ -1,5 +1,6 @@
 package com.nexo.ecommerce.orders.infrastructure.adapters;
 
+import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +11,10 @@ import com.stripe.param.PaymentIntentCreateParams;
 
 import jakarta.annotation.PostConstruct;
 
+import com.nexo.ecommerce.orders.application.ports.PaymentPort;
+
 @Service
-public class StripeService {
+public class StripeService implements PaymentPort {
 
     @Value("${stripe.apiKey}")
     private String secretKey;
@@ -25,19 +28,24 @@ public class StripeService {
     }
 
 
-public PaymentIntent createPaymentIntent(Long amount) throws StripeException {
-    PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-            .setAmount(amount) // Ejemplo: 1000L = $10.00
-            .setCurrency(currency) // "usd", "pen", etc.
-            .setAutomaticPaymentMethods(
-                PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
-                        .setEnabled(true)
-                        .build()
-            )
-            .build();
-            
-    return PaymentIntent.create(params);
-
-}
+    @Override
+    public String createPaymentIntent(String orderId, BigDecimal amount, String currency) {
+        try {
+            long cents = amount.multiply(new BigDecimal("100")).longValue();
+            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                    .setAmount(cents)
+                    .setCurrency(currency != null ? currency.toLowerCase() : "usd")
+                    .setAutomaticPaymentMethods(
+                        PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
+                                .setEnabled(true)
+                                .build()
+                    )
+                    .build();
+            PaymentIntent intent = PaymentIntent.create(params);
+            return intent.getId();
+        } catch (StripeException e) {
+            throw new RuntimeException("Error creating payment intent", e);
+        }
+    }
 
 }

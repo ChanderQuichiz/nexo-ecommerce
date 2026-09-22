@@ -29,7 +29,9 @@ public class OrderMapper {
         orderEntityJpa.setAddress(order.getAddress().value());
         orderEntityJpa.setCity(order.getCity().value());
         orderEntityJpa.setPhone(order.getPhone().value());
-        orderEntityJpa.setPaymentIntentId(order.getPaymentIntentId().stream().map(paymentIntentId -> paymentIntentId.value().toString()).toList());
+        orderEntityJpa.setPaymentIntentId(order.getPaymentIntentId() != null 
+            ? order.getPaymentIntentId().stream().map(paymentIntentId -> paymentIntentId.value().toString()).toList() 
+            : new java.util.ArrayList<>());
         orderEntityJpa.setItems(order.getItems().stream().map(item -> {
             ItemEmbeddable itemEmbeddable = new ItemEmbeddable();
             itemEmbeddable.setProductId(item.productId());
@@ -52,7 +54,7 @@ public class OrderMapper {
             new Address(orderEntityJpa.getAddress()),
             new City(orderEntityJpa.getCity()),
             new Phone(orderEntityJpa.getPhone()),
-            orderEntityJpa.getPaymentIntentId().stream().map(paymentIntentId -> new PaymentIntentId(paymentIntentId)).toList(),
+            orderEntityJpa.getPaymentIntentId().stream().map(paymentIntentId -> new PaymentIntentId(paymentIntentId)).collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new)),
             orderEntityJpa.getItems().stream().map(itemEmbeddable -> new Item(itemEmbeddable.getPrice(),itemEmbeddable.getProductId(), itemEmbeddable.getQuantity())).toList()
         );
         return order;

@@ -5,11 +5,14 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 
+import org.springframework.stereotype.Repository;
+
 import com.nexo.ecommerce.orders.application.repositories.OrderRepository;
 import com.nexo.ecommerce.orders.domain.entities.Order;
 
 
 
+@Repository
 public class OrderRepositoryPgImpl implements OrderRepository {
     private final OrdenRepositoryJpa ordenRepositoryJpa;
     public OrderRepositoryPgImpl(OrdenRepositoryJpa ordenRepositoryJpa) {
@@ -55,6 +58,13 @@ public class OrderRepositoryPgImpl implements OrderRepository {
     public BigDecimal getOrderTotal(String orderId) {
         // TODO Auto-generated method stub
         return ordenRepositoryJpa.getOrderTotal(orderId);
+    }
+
+    @Override
+    public Order findByPaymentIntentId(String paymentIntentId) {
+        return ordenRepositoryJpa.findByPaymentIntentId(paymentIntentId)
+                .map(OrderMapper::toDomain)
+                .orElse(null);
     }
 
 

@@ -17,5 +17,5 @@ public interface OrderRepository {
 
     public BigDecimal getOrderTotal(String orderId);
 
-
+    public Order findByPaymentIntentId(String paymentIntentId);
 }

@@ -1,4 +1,4 @@
-package com.nexo.ecommerce.orders.catalog_client.dto;
+package com.nexo.ecommerce.orders.application.client.dto;
 
 import java.util.List;
 

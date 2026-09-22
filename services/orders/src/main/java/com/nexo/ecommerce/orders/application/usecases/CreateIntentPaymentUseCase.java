@@ -29,6 +29,7 @@ public class CreateIntentPaymentUseCase {
             String intentId = paymentPort.createPaymentIntent(request.orderId(), amount, currency);
             PaymentIntentId paymentIntentId = new PaymentIntentId(intentId);
             existingOrder.addPaymentIntentId(paymentIntentId);
+            orderRepository.save(existingOrder);
 
             return new CreateIntentPaymentResponse(intentId);
         }

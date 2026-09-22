@@ -1,7 +1,8 @@
 package com.nexo.ecommerce.orders.application.usecases;
 
-import com.nexo.ecommerce.orders.application.dto.OrdenCreateResponseDto;
 import com.nexo.ecommerce.orders.application.repositories.OrderRepository;
+import com.nexo.ecommerce.orders.application.usecases.dto.OrdenCreateRequestDto;
+import com.nexo.ecommerce.orders.application.usecases.dto.OrdenCreateResponseDto;
 import com.nexo.ecommerce.orders.domain.entities.Order;
 import com.nexo.ecommerce.orders.domain.value_objects.Address;
 import com.nexo.ecommerce.orders.domain.value_objects.City;
@@ -14,7 +15,6 @@ import java.util.List;
 import com.nexo.ecommerce.orders.application.client.CatalogClient;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
-import com.nexo.ecommerce.orders.application.dto.OrdenCreateRequestDto;
 public class OrdenCreateUseCase {
     private final OrderRepository orderRepository;
     private final CatalogClient catalogClient;

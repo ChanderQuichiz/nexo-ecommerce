@@ -21,4 +21,9 @@ List<OrderEntityJpa> findByUserId(@Param("userId") String userId);
 )
 BigDecimal getOrderTotal(@Param("orderId") String orderId);
 
+@Query(
+    "SELECT o FROM OrderEntityJpa o JOIN o.paymentIntentId pi WHERE pi = :paymentIntentId"
+)
+java.util.Optional<OrderEntityJpa> findByPaymentIntentId(@Param("paymentIntentId") String paymentIntentId);
+
 }

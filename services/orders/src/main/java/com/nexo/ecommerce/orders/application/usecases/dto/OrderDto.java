@@ -1,6 +1,7 @@
 package com.nexo.ecommerce.orders.application.usecases.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 
 public record OrderDto(
@@ -8,7 +9,7 @@ public record OrderDto(
     String userId,
     String address,
     String phone,
-    String date,
+    LocalDateTime date,
     String status,
     java.util.List<ItemDto> items,
     BigDecimal subTotal,

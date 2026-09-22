@@ -13,7 +13,7 @@ public class OrderReadByIdUseCase {
     public OrderDto execute(String orderId) {
         // Implementation for reading an order by ID
         Order order = orderRepository.findById(orderId);
-        if(!order.getId().value().toString().equals(orderId)) {
+        if(order == null || !order.getId().value().toString().equals(orderId)) {
             throw new RuntimeException("Order not found");
         }
         return OrderMapperDto.toDto(order);
