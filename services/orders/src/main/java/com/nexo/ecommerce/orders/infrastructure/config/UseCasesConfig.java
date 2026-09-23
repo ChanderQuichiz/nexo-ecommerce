@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.nexo.ecommerce.orders.application.client.CatalogClient;
+import com.nexo.ecommerce.orders.application.ports.EventPublisherPort;
 import com.nexo.ecommerce.orders.application.ports.PaymentPort;
 import com.nexo.ecommerce.orders.application.repositories.OrderRepository;
 import com.nexo.ecommerce.orders.application.usecases.CreateIntentPaymentUseCase;
@@ -18,8 +19,8 @@ import com.nexo.ecommerce.orders.application.usecases.ProcessPaymentWebhookUseCa
 public class UseCasesConfig {
 
     @Bean
-    public OrdenCreateUseCase ordenCreateUseCase(OrderRepository orderRepository, CatalogClient catalogClient) {
-        return new OrdenCreateUseCase(orderRepository, catalogClient);
+    public OrdenCreateUseCase ordenCreateUseCase(OrderRepository orderRepository, CatalogClient catalogClient, EventPublisherPort eventPublisherPort) {
+        return new OrdenCreateUseCase(orderRepository, catalogClient, eventPublisherPort);
     }
 
     @Bean

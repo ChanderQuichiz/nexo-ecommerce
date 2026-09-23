@@ -20,9 +20,10 @@ import com.nexo.ecommerce.orders.application.usecases.dto.OrdenCreateResponseDto
 import com.nexo.ecommerce.orders.application.repositories.OrderRepository;
 import com.nexo.ecommerce.orders.application.usecases.OrdenCreateUseCase;
 import com.nexo.ecommerce.orders.domain.entities.Order;
-
+import com.nexo.ecommerce.orders.domain.events.OrderCreatedEvent;
 import com.nexo.ecommerce.orders.application.client.CatalogClient;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
+import com.nexo.ecommerce.orders.application.ports.EventPublisherPort;
 
 @ExtendWith(MockitoExtension.class)
 class OrdenCreateUseCaseTest {
@@ -33,11 +34,14 @@ class OrdenCreateUseCaseTest {
     @Mock
     private CatalogClient catalogClient;
 
+    @Mock
+    private EventPublisherPort eventPublisherPort;
+
     @InjectMocks
     private OrdenCreateUseCase ordenCreateUseCase;
 
     @Test
-    @DisplayName("Debe crear la orden exitosamente")
+    @DisplayName("Debe crear la orden exitosamente y publicar evento de dominio")
     void createOrder_Success() {
         OrdenCreateRequestDto request = new OrdenCreateRequestDto(
             "user-123",
@@ -54,5 +58,6 @@ class OrdenCreateUseCaseTest {
         assertNotNull(response);
         assertTrue(response.message().startsWith("Orden creada exitosamente"));
         verify(orderRepository, times(1)).save(any(Order.class));
+        verify(eventPublisherPort, times(1)).publishOrderCreatedEvent(any(OrderCreatedEvent.class));
     }
 }

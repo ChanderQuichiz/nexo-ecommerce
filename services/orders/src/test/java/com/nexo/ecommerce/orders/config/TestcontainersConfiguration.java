@@ -3,7 +3,9 @@ package com.nexo.ecommerce.orders.config;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.postgresql.PostgreSQLContainer;
+
 @TestConfiguration(proxyBeanMethods = false)
 public class TestcontainersConfiguration {
 
@@ -11,5 +13,11 @@ public class TestcontainersConfiguration {
     @ServiceConnection
     static PostgreSQLContainer postgresContainer() {
         return new PostgreSQLContainer("postgres:15-alpine");
+    }
+
+    @Bean
+    static GenericContainer<?> rabbitMQContainer() {
+        return new GenericContainer<>("rabbitmq:4-management-alpine")
+                .withExposedPorts(5672);
     }
 }
