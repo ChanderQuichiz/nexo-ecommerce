@@ -4,6 +4,7 @@ import com.nexo.ecommerce.orders.application.repositories.OrderRepository;
 import com.nexo.ecommerce.orders.application.usecases.dto.OrdenCreateRequestDto;
 import com.nexo.ecommerce.orders.application.usecases.dto.OrdenCreateResponseDto;
 import com.nexo.ecommerce.orders.domain.entities.Order;
+import com.nexo.ecommerce.orders.domain.events.OrderCreatedEvent;
 import com.nexo.ecommerce.orders.domain.value_objects.Address;
 import com.nexo.ecommerce.orders.domain.value_objects.City;
 import com.nexo.ecommerce.orders.domain.value_objects.Item;
@@ -15,13 +16,16 @@ import java.util.List;
 import com.nexo.ecommerce.orders.application.client.CatalogClient;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
+import com.nexo.ecommerce.orders.application.ports.EventPublisherPort;
 public class OrdenCreateUseCase {
     private final OrderRepository orderRepository;
     private final CatalogClient catalogClient;
-public OrdenCreateUseCase(OrderRepository orderRepository, CatalogClient catalogClient) {
+    private final EventPublisherPort eventPublisherPort;
+public OrdenCreateUseCase(OrderRepository orderRepository, CatalogClient catalogClient, EventPublisherPort eventPublisherPort) {
         // Constructor vacío
         this.orderRepository = orderRepository;
         this.catalogClient = catalogClient;
+        this.eventPublisherPort = eventPublisherPort;
     }
 
     public OrdenCreateResponseDto execute(OrdenCreateRequestDto request) {
@@ -37,28 +41,26 @@ public OrdenCreateUseCase(OrderRepository orderRepository, CatalogClient catalog
 
         ValidateStockRequest validateStockRequest = new ValidateStockRequest(items);
 
-   ValidateStockResponse validateStockResponse = catalogClient.validateStock(validateStockRequest);
+        ValidateStockResponse validateStockResponse = catalogClient.validateStock(validateStockRequest);
      
         if (!validateStockResponse.available()) {
-            StringBuilder messageBuilder = new StringBuilder();
-            messageBuilder.append("No hay suficiente stock para los siguientes productos: ");
-            for (var item : validateStockResponse.items()) {
-                if (!item.hasStock()) {
-                    messageBuilder.append("Producto ID: ").append(item.productId())
-                            .append(", Stock restante: ").append(item.remainingStock()).append("; ");
-                }
-            }
-            throw new IllegalArgumentException(messageBuilder.toString());
+            throw new IllegalArgumentException("No hay suficiente stock");
         }
 
        Order saveOrder = Order.create(userId, address, city, phone, items);
 
         this.orderRepository.save(saveOrder);
         
-        for (Item item : saveOrder.getItems()) {
+        saveOrder.getItems().forEach(item -> {
             catalogClient.reduceStock(item.productId(), item.quantity());
+        });
+        OrderCreatedEvent eventObject = new OrderCreatedEvent(saveOrder.getId().toString());
+        saveOrder.getDomainEvents().forEach((event) -> {
+           if (event instanceof OrderCreatedEvent) {
+                eventPublisherPort.publishOrderCreatedEvent(eventObject);
+            }
         }
-
+        );  
 
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append("Orden creada exitosamente con ID: ").append(saveOrder.getId());

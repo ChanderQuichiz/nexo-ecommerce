@@ -15,13 +15,24 @@ export interface CartItem {
 }
 
 export type OrderStatus =
-  'pending' | 'Pagado' | 'En preparación' | 'Enviado' | 'Entregado' | 'cancelled';
+  | 'PENDING'
+  | 'PAID'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'pending'
+  | 'Pagado'
+  | 'En preparación'
+  | 'Enviado'
+  | 'Entregado';
 
 export interface Order {
   id: string;
   userId: string;
   items: CartItem[];
   total: number;
+  subTotal?: number;
+  shippingFee?: number;
+  tax?: number;
   date: Date;
   status: OrderStatus;
   shippingAddress?: {
@@ -29,6 +40,7 @@ export interface Order {
     city: string;
     phone: string;
   };
+  paymentIntentId?: string[];
 }
 
 export type UserRole = 'Admin' | 'Client';

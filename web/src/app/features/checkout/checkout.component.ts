@@ -2,14 +2,9 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { loadStripe } from '@stripe/stripe-js';
-import { environment } from '../../../environments/environment';
 import { CartService } from '../../core/cart.service';
 import { OrderService } from '../../core/order.service';
-import { ProductService } from '../../core/product.service';
-import { CartItem } from '../../core/models';
 
 @Component({
   selector: 'app-checkout',
@@ -18,32 +13,6 @@ import { CartItem } from '../../core/models';
   template: `
     <div class="container mx-auto px-4 py-8 max-w-4xl">
       <h1 class="text-3xl font-bold mb-8 text-gray-800 text-center">Finalizar Compra</h1>
-
-      <!-- Progress Bar -->
-      <div class="mb-12">
-        <div class="flex items-center justify-center space-x-4">
-          <div class="flex items-center">
-            <div
-              [class.bg-indigo-600]="step() >= 1"
-              class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold transition-colors"
-            >
-              1
-            </div>
-            <span class="ml-2 font-medium" [class.text-indigo-600]="step() === 1">Envío</span>
-          </div>
-          <div class="w-16 h-px bg-gray-300"></div>
-          <div class="flex items-center">
-            <div
-              [class.bg-indigo-600]="step() >= 2"
-              [class.bg-gray-300]="step() < 2"
-              class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold transition-colors"
-            >
-              2
-            </div>
-            <span class="ml-2 font-medium" [class.text-indigo-600]="step() === 2">Pago</span>
-          </div>
-        </div>
-      </div>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <!-- Form Section -->
@@ -54,86 +23,54 @@ import { CartItem } from '../../core/models';
             </div>
           }
 
-          <form [formGroup]="checkoutForm">
-            <!-- Step 1: Address & Shipping -->
-            @if (step() === 1) {
-              <div formGroupName="shipping" class="space-y-6 animate-fade-in">
-                <h2 class="text-xl font-semibold mb-4 border-b pb-2">Información de Envío</h2>
+          <form [formGroup]="checkoutForm" class="space-y-6">
+            <div formGroupName="shipping" class="space-y-6 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+              <h2 class="text-xl font-semibold mb-4 border-b pb-2">Información de Envío</h2>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Dirección *</label>
+                <input
+                  type="text"
+                  formControlName="address"
+                  class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                  placeholder="Calle, Número, Apto"
+                />
+              </div>
+              <div class="grid grid-cols-2 gap-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Dirección *</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Ciudad *</label>
                   <input
                     type="text"
-                    formControlName="address"
+                    formControlName="city"
                     class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                    placeholder="Calle, Número, Apto"
+                    placeholder="Ej: Lima"
                   />
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Ciudad *</label>
-                    <input
-                      type="text"
-                      formControlName="city"
-                      class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                      placeholder="Ej: Bogotá"
-                    />
-                  </div>
-                  <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono *</label>
-                    <input
-                      type="tel"
-                      formControlName="phone"
-                      class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                      placeholder="Ej: 3001234567"
-                    />
-                  </div>
-                </div>
-                <div class="pt-4">
-                  <button
-                    type="button"
-                    (click)="nextStep()"
-                    [disabled]="!checkoutForm.get('shipping')?.valid"
-                    class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50"
-                  >
-                    Continuar al Pago
-                  </button>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Teléfono *</label>
+                  <input
+                    type="tel"
+                    formControlName="phone"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                    placeholder="Ej: +51999888777"
+                  />
                 </div>
               </div>
-            }
-
-            <!-- Step 2: Payment -->
-            @if (step() === 2) {
-              <div formGroupName="payment" class="space-y-6 animate-fade-in">
-                <h2 class="text-xl font-semibold mb-4 border-b pb-2">Información de Pago</h2>
-                <!-- Aquí irían los Stripe Elements en una implementación real -->
-                <p class="text-sm text-gray-600">Procesando pago seguro vía Stripe...</p>
-                
-                <div class="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    (click)="prevStep()"
-                    class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-200 transition-colors"
-                  >
-                    Regresar
-                  </button>
-                  <button
-                    type="button"
-                    (click)="processPayment()"
-                    [disabled]="loading()"
-                    class="flex-1 bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50"
-                  >
-                    @if (loading()) {
-                      <span
-                        class="animate-spin inline-block mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"
-                      ></span>
-                      Procesando...
-                    } @else {
-                      Confirmar Compra
-                    }
-                  </button>
-                </div>
+              <div class="pt-4">
+                <button
+                  type="button"
+                  (click)="createOrder()"
+                  [disabled]="!checkoutForm.get('shipping')?.valid || loading()"
+                  class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center shadow-lg shadow-indigo-100"
+                >
+                  @if (loading()) {
+                    <span class="animate-spin inline-block mr-2 h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+                    Creando Pedido...
+                  } @else {
+                    Confirmar y Crear Pedido
+                  }
+                </button>
               </div>
-            }
+            </div>
           </form>
         </div>
 
@@ -166,26 +103,8 @@ import { CartItem } from '../../core/models';
       </div>
     </div>
   `,
-  styles: [
-    `
-      .animate-fade-in {
-        animation: fadeIn 0.3s ease-out;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-    `,
-  ],
 })
 export class CheckoutComponent implements OnInit {
-  step = signal(1);
   loading = signal(false);
   errorMessage = signal('');
   shippingCost = 10;
@@ -200,9 +119,7 @@ export class CheckoutComponent implements OnInit {
     private fb: FormBuilder,
     private cartService: CartService,
     private orderService: OrderService,
-    private productService: ProductService,
     private router: Router,
-    private http: HttpClient,
   ) {
     this.cartItems = this.cartService.items;
     this.subtotal = this.cartService.totalPrice;
@@ -212,9 +129,6 @@ export class CheckoutComponent implements OnInit {
         address: ['', Validators.required],
         city: ['', Validators.required],
         phone: ['', [Validators.required, Validators.pattern('^[0-9+ ]{7,15}$')]],
-      }),
-      payment: this.fb.group({
-        // Campos de tarjeta simplificados ya que Stripe Elements manejará esto
       }),
     });
   }
@@ -227,49 +141,26 @@ export class CheckoutComponent implements OnInit {
     this.total.set(this.subtotal() + this.shippingCost);
   }
 
-  nextStep(): void {
-    if (this.checkoutForm.get('shipping')?.valid) {
-      this.step.set(2);
-    }
-  }
+  async createOrder(): Promise<void> {
+    if (!this.checkoutForm.get('shipping')?.valid) return;
 
-  prevStep(): void {
-    this.step.set(1);
-  }
-
-  async processPayment(): Promise<void> {
     this.loading.set(true);
     this.errorMessage.set('');
 
     try {
-      // 1. Obtener el ClientSecret del backend
-      const amountInCents = Math.round(this.total() * 100);
-      const clientSecret = await firstValueFrom(
-        this.http.post<string>('/api/v1/stripe/create-payment-intent', amountInCents)
+      const shippingInfo = this.checkoutForm.get('shipping')?.value;
+      // 1. Crear la orden (POST /orders -> Estado PENDING)
+      await firstValueFrom(
+        this.orderService.createOrder(this.cartItems(), this.total(), shippingInfo)
       );
 
-      // 2. Inicializar Stripe y confirmar pago
-      const stripe = await loadStripe(environment.stripePublicKey);
-      if (!stripe) throw new Error('Stripe failed to load');
+      this.cartService.clearCart();
+      this.loading.set(false);
 
-      // (Nota: Aquí integrarías Stripe Elements para capturar datos de tarjeta)
-      // Por ahora, simulamos la confirmación exitosa con Stripe
-      const result = { paymentIntent: { status: 'succeeded' }, error: null };
-
-      if (result.error) {
-        this.errorMessage.set((result.error as any).message || 'Error en el pago');
-        this.loading.set(false);
-      } else if (result.paymentIntent?.status === 'succeeded') {
-        // 3. Pago exitoso, crear pedido en tu backend
-        const shippingInfo = this.checkoutForm.get('shipping')?.value;
-        const order = await firstValueFrom(
-          this.orderService.createOrder(this.cartItems(), this.total(), shippingInfo)
-        );
-        this.cartService.clearCart();
-        this.router.navigate(['/order-confirmation'], { state: { order } });
-      }
-    } catch (err) {
-      this.errorMessage.set('Hubo un error al procesar el pago.');
+      // 2. Redirigir a "Mis Pedidos" (Order History) donde el usuario puede ver su pedido y realizar el pago
+      this.router.navigate(['/orders']);
+    } catch (err: any) {
+      this.errorMessage.set(err.message || 'Error al crear el pedido.');
       this.loading.set(false);
     }
   }
