@@ -16,7 +16,20 @@ export class CartService {
     this.cartItems().reduce((acc, item) => acc + item.product.price * item.quantity, 0),
   );
 
-  constructor(private productService: ProductService) {}
+  constructor(private productService: ProductService) {
+    if (typeof window !== 'undefined') {
+      const savedCart = localStorage.getItem('cart');
+      if (savedCart) {
+        this.cartItems.set(JSON.parse(savedCart));
+      }
+    }
+  }
+
+  private saveCart() {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cart', JSON.stringify(this.cartItems()));
+    }
+  }
 
   addToCart(product: Product, quantity: number = 1): boolean {
     if (!this.productService.checkStock(product.id, quantity)) {
@@ -32,11 +45,13 @@ export class CartService {
       }
       return [...items, { product, quantity }];
     });
+    this.saveCart();
     return true;
   }
 
   removeFromCart(productId: number): void {
     this.cartItems.update((items) => items.filter((item) => item.product.id !== productId));
+    this.saveCart();
   }
 
   updateQuantity(productId: number, quantity: number): boolean {
@@ -55,10 +70,12 @@ export class CartService {
     this.cartItems.update((items) =>
       items.map((item) => (item.product.id === productId ? { ...item, quantity } : item)),
     );
+    this.saveCart();
     return true;
   }
 
   clearCart(): void {
     this.cartItems.set([]);
+    this.saveCart();
   }
 }
