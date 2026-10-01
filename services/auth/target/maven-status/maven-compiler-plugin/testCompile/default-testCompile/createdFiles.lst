@@ -1,0 +1,8 @@
+com\nexo\ecommerce\auth\application\usecases\LoginUseCaseTest.class
+com\nexo\ecommerce\auth\application\usecases\RegisterUserUseCaseTest.class
+com\nexo\ecommerce\auth\application\usecases\GetCurrentUserUseCaseTest.class
+com\nexo\ecommerce\auth\application\usecases\AccessTokenUseCasesTest.class
+com\nexo\ecommerce\auth\integration\AuthControllerIT.class
+com\nexo\ecommerce\auth\application\usecases\ProvisionAdminUserUseCaseTest.class
+com\nexo\ecommerce\auth\architecture\CleanArchitectureTest.class
+com\nexo\ecommerce\auth\infrastructure\security\JwtAccessTokenAdapterTest.class

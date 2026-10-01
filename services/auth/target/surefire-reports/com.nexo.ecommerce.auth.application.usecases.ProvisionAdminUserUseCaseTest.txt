@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.nexo.ecommerce.auth.application.usecases.ProvisionAdminUserUseCaseTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.951 s -- in com.nexo.ecommerce.auth.application.usecases.ProvisionAdminUserUseCaseTest
