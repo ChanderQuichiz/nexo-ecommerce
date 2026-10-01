@@ -1,0 +1,8 @@
+/Users/chanderquichiz/Documents/nova-ecommerce/services/auth/src/test/java/com/nexo/ecommerce/auth/application/usecases/AccessTokenUseCasesTest.java
+/Users/chanderquichiz/Documents/nova-ecommerce/services/auth/src/test/java/com/nexo/ecommerce/auth/application/usecases/GetCurrentUserUseCaseTest.java
+/Users/chanderquichiz/Documents/nova-ecommerce/services/auth/src/test/java/com/nexo/ecommerce/auth/application/usecases/LoginUseCaseTest.java
+/Users/chanderquichiz/Documents/nova-ecommerce/services/auth/src/test/java/com/nexo/ecommerce/auth/application/usecases/ProvisionAdminUserUseCaseTest.java
+/Users/chanderquichiz/Documents/nova-ecommerce/services/auth/src/test/java/com/nexo/ecommerce/auth/application/usecases/RegisterUserUseCaseTest.java
+/Users/chanderquichiz/Documents/nova-ecommerce/services/auth/src/test/java/com/nexo/ecommerce/auth/architecture/CleanArchitectureTest.java
+/Users/chanderquichiz/Documents/nova-ecommerce/services/auth/src/test/java/com/nexo/ecommerce/auth/infrastructure/security/JwtAccessTokenAdapterTest.java
+/Users/chanderquichiz/Documents/nova-ecommerce/services/auth/src/test/java/com/nexo/ecommerce/auth/integration/AuthControllerIT.java
