@@ -1,0 +1,31 @@
+@startuml der_orders_service
+!theme plain
+hide circle
+skinparam linetype ortho
+
+entity "ORDERS" as ORDERS {
+  *id : string <<PK>>
+  --
+  userId : string <<ref Auth.Users>>
+  subtotal : decimal
+  shippingFee : decimal
+  tax : decimal
+  total : decimal
+  status : string
+  date : datetime
+  shippingAddress : json
+}
+
+entity "ORDER_ITEMS" as ORDER_ITEMS {
+  *id : string <<PK>>
+  --
+  orderId : string <<FK>>
+  productId : int <<ref Catalog>>
+  name : string
+  price : decimal
+  quantity : int
+}
+
+ORDERS ||--o{ ORDER_ITEMS : contiene
+
+@enduml

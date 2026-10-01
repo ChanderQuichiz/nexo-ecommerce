@@ -1,0 +1,69 @@
+@startuml auth_clean_architecture
+!theme plain
+skinparam componentStyle rectangle
+left to right direction
+
+package "Presentation / inbound adapters" {
+  [AuthController] as controller
+  [JWT authentication filter] as filter
+}
+
+package "Application / use cases" {
+  [RegisterUserUseCase] as register
+  [LoginUseCase] as login
+  [GetCurrentUserUseCase] as me
+  [LogoutUseCase] as logout
+  [ValidateAccessTokenUseCase] as validate
+  interface "UserRepository" as userPort
+  interface "PasswordHasher" as passwordPort
+  interface "AccessTokenProvider" as tokenPort
+  interface "RevokedTokenStore" as revocationPort
+}
+
+package "Domain" {
+  [User aggregate] as user
+  [EmailAddress value object] as email
+  [UserRole] as role
+}
+
+package "Infrastructure / outbound adapters" {
+  [UserPersistenceAdapter] as userAdapter
+  [BCryptPasswordHasher] as passwordAdapter
+  [JwtAccessTokenAdapter] as tokenAdapter
+  [RedisRevokedTokenAdapter] as revocationAdapter
+  database "PostgreSQL" as postgres
+  database "Redis" as redis
+}
+
+controller --> register
+controller --> login
+controller --> me
+controller --> logout
+filter --> validate
+register --> userPort
+register --> passwordPort
+register --> tokenPort
+login --> userPort
+login --> passwordPort
+login --> tokenPort
+me --> userPort
+logout --> tokenPort
+logout --> revocationPort
+validate --> tokenPort
+validate --> revocationPort
+userPort <|.. userAdapter
+passwordPort <|.. passwordAdapter
+tokenPort <|.. tokenAdapter
+revocationPort <|.. revocationAdapter
+userAdapter --> postgres
+revocationAdapter --> redis
+register ..> user
+login ..> user
+user ..> email
+user ..> role
+
+note bottom
+  Source dependency rule: Domain and Application do not depend on
+  Presentation, Infrastructure, Spring, JPA, Redis or JWT libraries.
+end note
+@enduml

@@ -1,0 +1,46 @@
+server:
+  port: ${SERVER_PORT:8084}
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5433/auth_db}
+    username: ${DATABASE_USERNAME:auth}
+    password: ${DATABASE_PASSWORD:auth}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    clean-disabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+auth:
+  cors:
+    allowed-origins: ${AUTH_CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  admin:
+    name: ${AUTH_ADMIN_NAME:Nexo Administrator}
+    email: ${AUTH_ADMIN_EMAIL:}
+    password: ${AUTH_ADMIN_PASSWORD:}
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION:15m}
+    issuer: ${JWT_ISSUER:nexo-ecommerce}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never

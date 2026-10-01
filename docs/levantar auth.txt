@@ -1,0 +1,118 @@
+1. Inicia PostgreSQL y Redis de Auth
+
+Auth usa PostgreSQL en el puerto 5433 y Redis en el 6379; la configuración está en docker-compose.yaml.
+
+
+2. Inicia el servicio Auth
+Abre una terminal de PowerShell y ejecuta:
+
+ejecuta primero:
+Set-Location 'D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\services\auth'
+
+despues en la misma terminal:
+$rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+$jwtBytes = New-Object byte[] 32
+$rng.GetBytes($jwtBytes)
+$env:JWT_SECRET = [Convert]::ToBase64String($jwtBytes)
+$rng.Dispose()
+
+$env:AUTH_ADMIN_NAME = "Administrador"
+$env:AUTH_ADMIN_EMAIL = "admin@gmail.com"
+$env:AUTH_ADMIN_PASSWORD = "administrador"
+
+..\orders\mvnw.cmd spring-boot:run
+
+
+
+3. Inicia Angular
+Abre una segunda terminal:
+
+
+Set-Location 'D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\web'
+npm.cmd start
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4. codigo por si ay algun puerto abierto que no deja iniciar el proyecto poner antes que todo 
+
+$puertos = 4200,5432,5433,6379,5672,8080,8081,8082,8084,8761,15672
+
+Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
+    Where-Object { $_.LocalPort -in $puertos } |
+    ForEach-Object {
+        $proceso = Get-Process -Id $_.OwningProcess -ErrorAction SilentlyContinue
+        [PSCustomObject]@{
+            Puerto  = $_.LocalPort
+            PID     = $_.OwningProcess
+            Proceso = if ($proceso) { $proceso.ProcessName } else { "No identificado" }
+        }
+    } |
+    Sort-Object Puerto, PID -Unique |
+    Format-Table -AutoSize
+
+
+5. codigo para parar todos esos puertos 
+
+$puertos = 4200,5432,5433,6379,5672,8080,8081,8082,8084,8761,15672
+
+$conexiones = Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue |
+    Where-Object { $_.LocalPort -in $puertos }
+
+$procesos = foreach ($grupo in ($conexiones | Group-Object OwningProcess)) {
+    $pidProceso = [int]$grupo.Name
+    $proceso = Get-Process -Id $pidProceso -ErrorAction SilentlyContinue
+
+    [PSCustomObject]@{
+        Puertos = (($grupo.Group.LocalPort | Sort-Object -Unique) -join ", ")
+        PID     = $pidProceso
+        Proceso = if ($proceso) { $proceso.ProcessName } else { "No identificado" }
+    }
+}
+
+if (-not $procesos) {
+    Write-Host "No hay procesos escuchando en esos puertos."
+} else {
+    $procesos | Format-Table -AutoSize
+    $confirmacion = Read-Host "Escribe SI para detener esos procesos"
+
+    if ($confirmacion -ceq "SI") {
+        foreach ($proceso in $procesos) {
+            Stop-Process -Id $proceso.PID -Force -ErrorAction Continue
+        }
+    } else {
+        Write-Host "No se detuvo ningún proceso."
+    }
+}
+
+

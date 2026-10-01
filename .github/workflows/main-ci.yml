@@ -1,0 +1,12 @@
+name: Main CI Workflow
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  orders-service:
+    uses: ./.github/workflows/reusable-java-ci.yml
+    with:
+      service_name: 'Orders Service'
+      service_path: 'services/orders'
