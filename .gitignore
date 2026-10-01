@@ -1,4 +1,0 @@
-.idea/
-.vscode/
-services/auth/target/
-services/auth/.env

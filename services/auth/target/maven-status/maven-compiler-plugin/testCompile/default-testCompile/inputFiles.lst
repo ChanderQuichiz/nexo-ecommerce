@@ -1,0 +1,8 @@
+D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\services\auth\src\test\java\com\nexo\ecommerce\auth\application\usecases\AccessTokenUseCasesTest.java
+D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\services\auth\src\test\java\com\nexo\ecommerce\auth\application\usecases\GetCurrentUserUseCaseTest.java
+D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\services\auth\src\test\java\com\nexo\ecommerce\auth\application\usecases\LoginUseCaseTest.java
+D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\services\auth\src\test\java\com\nexo\ecommerce\auth\application\usecases\ProvisionAdminUserUseCaseTest.java
+D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\services\auth\src\test\java\com\nexo\ecommerce\auth\application\usecases\RegisterUserUseCaseTest.java
+D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\services\auth\src\test\java\com\nexo\ecommerce\auth\architecture\CleanArchitectureTest.java
+D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\services\auth\src\test\java\com\nexo\ecommerce\auth\infrastructure\security\JwtAccessTokenAdapterTest.java
+D:\CICLO 2026\SEXTO CICLO 2026\DESARROLLO DE APLICACIONES WEB 2\PROYECTO 30-09-2026\nexo-ecommerce-main\services\auth\src\test\java\com\nexo\ecommerce\auth\integration\AuthControllerIT.java
