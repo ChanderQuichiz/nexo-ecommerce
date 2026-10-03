@@ -1,5 +1,6 @@
 package com.nexo.ecommerce.catalog.presentation.exceptions;
 
+import com.nexo.ecommerce.catalog.domain.exceptions.ProductAlreadyExistsException;
 import com.nexo.ecommerce.catalog.domain.exceptions.ProductNotFoundException;
 
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,22 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .badRequest()
+                .body(error);
+    }
+
+    @ExceptionHandler(ProductAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handleProductAlreadyExists(
+            ProductAlreadyExistsException exception
+    ) {
+        ApiError error = new ApiError(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                HttpStatus.CONFLICT.getReasonPhrase(),
+                exception.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .body(error);
     }
 }
