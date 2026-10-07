@@ -7,7 +7,6 @@ public record CreateProductRequest(
         String description,
         BigDecimal price,
         Integer stock,
-        String imageUrl,
         String category
 ) {
 }

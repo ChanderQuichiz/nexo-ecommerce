@@ -1,15 +1,15 @@
 package com.nexo.ecommerce.catalog.presentation.controllers;
 
 import com.nexo.ecommerce.catalog.application.usecases.*;
-import com.nexo.ecommerce.catalog.application.usecases.dto.CreateProductRequest;
-import com.nexo.ecommerce.catalog.application.usecases.dto.ProductResponse;
-import com.nexo.ecommerce.catalog.application.usecases.dto.ValidateStockRequest;
-import com.nexo.ecommerce.catalog.application.usecases.dto.ValidateStockResponse;
+import com.nexo.ecommerce.catalog.application.usecases.dto.*;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -69,16 +69,34 @@ public class CatalogController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductResponse> createProduct(
-            @RequestBody CreateProductRequest request
+            @RequestPart("product") CreateProductRequest request,
+            @RequestPart("image") MultipartFile image
     ) {
-        ProductResponse response =
-                createProductUseCase.execute(request);
+        try {
+            ProductImage productImage = new ProductImage(
+                    image.getBytes(),
+                    image.getContentType(),
+                    image.getOriginalFilename()
+            );
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+            ProductResponse response =
+                    createProductUseCase.execute(
+                            request,
+                            productImage
+                    );
+
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(response);
+
+        } catch (IOException exception) {
+            throw new IllegalArgumentException(
+                    "No se pudo leer la imagen enviada",
+                    exception
+            );
+        }
     }
 
     @GetMapping

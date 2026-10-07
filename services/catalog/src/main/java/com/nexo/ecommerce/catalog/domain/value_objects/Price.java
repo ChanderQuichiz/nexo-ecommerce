@@ -7,19 +7,19 @@ public record Price(BigDecimal value) {
     public Price {
         if (value == null) {
             throw new IllegalArgumentException(
-                    "Price cannot be null"
+                    "El precio no puede ser nulo."
             );
         }
 
         if (value.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException(
-                    "Price cannot be negative"
+                    "El precio no puede ser negativo."
             );
         }
 
         if (value.scale() > 2) {
             throw new IllegalArgumentException(
-                    "Price cannot have more than 2 decimal places"
+                    "El precio no puede tener más de 2 decimales."
             );
         }
     }

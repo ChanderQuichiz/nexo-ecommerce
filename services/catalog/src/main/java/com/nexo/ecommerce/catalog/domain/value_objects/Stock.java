@@ -5,13 +5,13 @@ public record Stock(Integer value) {
     public Stock {
         if (value == null) {
             throw new IllegalArgumentException(
-                    "Stock cannot be null"
+                    "El stock no puede ser nulo."
             );
         }
 
         if (value < 0) {
             throw new IllegalArgumentException(
-                    "Stock cannot be negative"
+                    "El stock no puede ser negativo."
             );
         }
     }
@@ -25,13 +25,13 @@ public record Stock(Integer value) {
     public Stock reduce(Integer quantity) {
         if (quantity == null || quantity <= 0) {
             throw new IllegalArgumentException(
-                    "Quantity must be greater than zero"
+                    "La cantidad debe ser mayor que cero."
             );
         }
 
         if (!isAvailable(quantity)) {
             throw new IllegalArgumentException(
-                    "Insufficient stock"
+                    "Stock insuficiente."
             );
         }
 

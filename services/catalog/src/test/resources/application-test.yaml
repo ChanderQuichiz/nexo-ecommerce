@@ -1,0 +1,9 @@
+aws:
+  region: us-east-1
+  s3:
+    bucket: test-bucket
+    cdn-url: https://cdn.test
+
+eureka:
+  client:
+    enabled: false

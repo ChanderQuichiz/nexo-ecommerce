@@ -1,5 +1,6 @@
 package com.nexo.ecommerce.catalog.infrastructure.config;
 
+import com.nexo.ecommerce.catalog.application.ports.ImageStoragePort;
 import com.nexo.ecommerce.catalog.application.ports.TransactionManager;
 import com.nexo.ecommerce.catalog.application.repositories.ProductRepository;
 import com.nexo.ecommerce.catalog.application.usecases.*;
@@ -37,9 +38,13 @@ public class UseCasesConfig {
 
     @Bean
     public CreateProductUseCase createProductUseCase(
-            ProductRepository productRepository
+            ProductRepository productRepository,
+            ImageStoragePort imageStoragePort
     ) {
-        return new CreateProductUseCase(productRepository);
+        return new CreateProductUseCase(
+                productRepository,
+                imageStoragePort
+        );
     }
 
     @Bean
