@@ -67,4 +67,25 @@ public class UseCasesConfig {
     ) {
         return new SearchProductsUseCase(productRepository);
     }
+
+    @Bean
+    public UpdateProductUseCase updateProductUseCase(
+            ProductRepository productRepository,
+            ImageStoragePort imageStoragePort
+    ) {
+        return new UpdateProductUseCase(
+                productRepository,
+                imageStoragePort
+        );
+    }
+
+    @Bean
+    public ToggleProductActiveUseCase toggleProductActiveUseCase(
+            ProductRepository productRepository
+    ) {
+        return new ToggleProductActiveUseCase(
+                productRepository
+        );
+    }
+
 }
