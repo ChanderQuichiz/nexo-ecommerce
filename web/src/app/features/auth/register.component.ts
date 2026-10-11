@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { finalize, timeout } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -29,6 +31,9 @@ import { AuthService } from '../../core/auth.service';
         </div>
 
         <form class="mt-8 space-y-6" (ngSubmit)="onSubmit()">
+          @if (errorMessage) {
+            <p class="rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">{{ errorMessage }}</p>
+          }
           <div class="rounded-md shadow-sm -space-y-px">
             <div>
               <label for="name" class="sr-only">Nombre Completo</label>
@@ -62,6 +67,7 @@ import { AuthService } from '../../core/auth.service';
                 name="password"
                 type="password"
                 required
+                minlength="8"
                 [(ngModel)]="password"
                 class="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Contraseña"
@@ -74,6 +80,7 @@ import { AuthService } from '../../core/auth.service';
                 name="confirmPassword"
                 type="password"
                 required
+                minlength="8"
                 [(ngModel)]="confirmPassword"
                 class="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Confirmar Contraseña"
@@ -112,6 +119,7 @@ export class RegisterComponent {
   password = '';
   confirmPassword = '';
   loading = false;
+  errorMessage = '';
 
   constructor(
     private authService: AuthService,
@@ -119,18 +127,26 @@ export class RegisterComponent {
   ) {}
 
   onSubmit(): void {
-    if (!this.name || !this.email || !this.password || this.password !== this.confirmPassword)
+    if (this.loading) return;
+    if (!this.name.trim() || !this.email.trim() || this.password.length < 8 || this.password !== this.confirmPassword) {
+      this.errorMessage = 'Completa los campos y usa una contraseña de al menos 8 caracteres.';
       return;
+    }
 
     this.loading = true;
 
-    this.authService.register(this.name, this.email, this.password).subscribe({
+    this.errorMessage = '';
+    this.authService.register(this.name.trim(), this.email.trim(), this.password).pipe(
+      timeout(8000),
+      finalize(() => this.loading = false),
+    ).subscribe({
       next: () => {
         this.router.navigate(['/catalog']);
       },
-      error: () => {
-        this.loading = false;
-        // In a real app, show error
+      error: (error: unknown) => {
+        this.errorMessage = error instanceof HttpErrorResponse && error.status === 400
+          ? 'Revisa los datos. El correo podría estar registrado.'
+          : 'No se pudo conectar con el servicio. Inténtalo de nuevo.';
       },
     });
   }

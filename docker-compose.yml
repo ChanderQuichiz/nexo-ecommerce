@@ -1,0 +1,150 @@
+services:
+  discovery:
+    build: ./services/discovery
+    environment:
+      DISCOVERY_BIND_ADDRESS: 0.0.0.0
+    ports:
+      - "127.0.0.1:8761:8761"
+
+  gateway:
+    build: ./services/gateway
+    environment:
+      GATEWAY_BIND_ADDRESS: 0.0.0.0
+      EUREKA_URL: http://discovery:8761/eureka/
+    ports:
+      - "127.0.0.1:8082:8082"
+    depends_on:
+      - discovery
+      - auth
+      - orders
+      - catalog
+
+  auth:
+    build: ./services/auth
+    environment:
+      SERVER_PORT: 8084
+      EUREKA_URL: http://discovery:8761/eureka/
+      DATABASE_URL: jdbc:postgresql://auth-postgres:5432/auth_db
+      DATABASE_USERNAME: auth
+      DATABASE_PASSWORD: auth
+      REDIS_HOST: auth-redis
+      JWT_SECRET: ${JWT_SECRET:?Configura JWT_SECRET con una clave Base64 de al menos 32 bytes}
+      AUTH_ADMIN_NAME: ${AUTH_ADMIN_NAME:-Administrador}
+      AUTH_ADMIN_EMAIL: ${AUTH_ADMIN_EMAIL:-}
+      AUTH_ADMIN_PASSWORD: ${AUTH_ADMIN_PASSWORD:-}
+    depends_on:
+      discovery:
+        condition: service_started
+      auth-postgres:
+        condition: service_healthy
+      auth-redis:
+        condition: service_healthy
+
+  orders:
+    build: ./services/orders
+    environment:
+      EUREKA_URL: http://discovery:8761/eureka/
+      DATABASE_URL: jdbc:postgresql://orders-postgres:5432/orders_db
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_USERNAME: nexo
+      RABBITMQ_PASSWORD: nexo
+      INTEREST_RATE: ${INTEREST_RATE:-0}
+      SHIPPING_FEE: ${SHIPPING_FEE:-0}
+      CURRENCY: ${CURRENCY:-pen}
+      STRIPE_API_KEY: ${STRIPE_API_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+    depends_on:
+      discovery:
+        condition: service_started
+      catalog:
+        condition: service_started
+      orders-postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  catalog:
+    build: ./services/catalog
+    environment:
+      EUREKA_SERVER_URL: http://discovery:8761/eureka/
+      DATABASE_URL: jdbc:postgresql://catalog-postgres:5432/catalog_db
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: postgres
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET:-}
+      CDN_URL: ${CDN_URL:-}
+    depends_on:
+      discovery:
+        condition: service_started
+      catalog-postgres:
+        condition: service_healthy
+
+  auth-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: auth
+    volumes:
+      - auth-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth -d auth_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  orders-postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: orders_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - orders-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d orders_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  catalog-postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: catalog_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - catalog-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d catalog_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  auth-redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: nexo
+      RABBITMQ_DEFAULT_PASS: nexo
+    ports:
+      - "127.0.0.1:15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  auth-postgres-data:
+  orders-postgres-data:
+  catalog-postgres-data:

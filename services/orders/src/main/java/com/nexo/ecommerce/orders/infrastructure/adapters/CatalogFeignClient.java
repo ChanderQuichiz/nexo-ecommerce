@@ -12,7 +12,7 @@ import com.nexo.ecommerce.orders.application.client.dto.GetProduct;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
 
-@FeignClient(name = "catalog-service", url = "${catalog.service.url:http://localhost:8081}")
+@FeignClient(name = "catalog-service")
 public interface CatalogFeignClient extends CatalogClient {
 
     @PostMapping("/catalog/validate-stock")

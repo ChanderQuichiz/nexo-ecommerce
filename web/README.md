@@ -1,59 +1,20 @@
 # Web
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.1.7.
+La aplicación Angular usa el Gateway para el login y el registro reales. En
+desarrollo llama a `http://127.0.0.1:8082/api`; en producción usa `/api` mediante
+`environment.prod.ts`. Inicia Discovery, Auth y Gateway antes de usar estas
+pantallas.
 
-## Development server
+Desde esta carpeta:
 
-To start a local development server, run:
-
-```bash
-ng serve
+```powershell
+npm install
+npm start -- --host 127.0.0.1
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Abre `http://127.0.0.1:4200/login`. El catálogo y los pedidos de esta rama
+principal siguen utilizando datos simulados en Angular; sus adaptadores al
+backend todavía no están implementados. En un despliegue, el servidor web debe
+reenviar `/api/**` al Gateway.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Para verificar los cambios, ejecuta `npm test -- --watch=false` y `npm run build`.

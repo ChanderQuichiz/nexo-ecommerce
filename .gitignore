@@ -1,2 +1,4 @@
 .idea/
 .vscode/
+/services/discovery/target/
+/services/gateway/target/
