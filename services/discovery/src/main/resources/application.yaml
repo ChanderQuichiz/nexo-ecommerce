@@ -1,0 +1,20 @@
+server:
+  address: ${DISCOVERY_BIND_ADDRESS:127.0.0.1}
+  port: ${DISCOVERY_PORT:8761}
+
+spring:
+  application:
+    name: discovery-service
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+  instance:
+    hostname: localhost
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
