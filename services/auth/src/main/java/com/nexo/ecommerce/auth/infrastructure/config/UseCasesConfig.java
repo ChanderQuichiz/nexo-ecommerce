@@ -5,6 +5,7 @@ import com.nexo.ecommerce.auth.application.ports.PasswordHasher;
 import com.nexo.ecommerce.auth.application.ports.RevokedTokenStore;
 import com.nexo.ecommerce.auth.application.ports.UserRepository;
 import com.nexo.ecommerce.auth.application.usecases.GetCurrentUserUseCase;
+import com.nexo.ecommerce.auth.application.usecases.GetUserByIdUseCase;
 import com.nexo.ecommerce.auth.application.usecases.LoginUseCase;
 import com.nexo.ecommerce.auth.application.usecases.LogoutUseCase;
 import com.nexo.ecommerce.auth.application.usecases.ProvisionAdminUserUseCase;
@@ -53,6 +54,11 @@ public class UseCasesConfig {
     @Bean
     GetCurrentUserUseCase getCurrentUserUseCase(UserRepository userRepository) {
         return new GetCurrentUserUseCase(userRepository);
+    }
+
+    @Bean
+    GetUserByIdUseCase getUserByIdUseCase(UserRepository userRepository) {
+        return new GetUserByIdUseCase(userRepository);
     }
 
     @Bean
