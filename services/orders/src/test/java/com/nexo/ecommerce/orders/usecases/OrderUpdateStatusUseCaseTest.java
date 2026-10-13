@@ -16,10 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nexo.ecommerce.orders.application.repositories.OrderRepository;
+import com.nexo.ecommerce.orders.application.ports.EventPublisherPort;
 import com.nexo.ecommerce.orders.application.usecases.OrderUpdateStatusUseCase;
 import com.nexo.ecommerce.orders.application.usecases.dto.UpdateStatusRequest;
 import com.nexo.ecommerce.orders.application.usecases.dto.UpdateStatusResponse;
 import com.nexo.ecommerce.orders.domain.entities.Order;
+import com.nexo.ecommerce.orders.domain.events.OrderUpdateEvent;
 import com.nexo.ecommerce.orders.domain.value_objects.Address;
 import com.nexo.ecommerce.orders.domain.value_objects.City;
 import com.nexo.ecommerce.orders.domain.value_objects.Item;
@@ -31,6 +33,9 @@ class OrderUpdateStatusUseCaseTest {
 
     @Mock
     private OrderRepository orderRepository;
+
+    @Mock
+    private EventPublisherPort eventPublisherPort;
 
     @InjectMocks
     private OrderUpdateStatusUseCase orderUpdateStatusUseCase;
@@ -64,5 +69,10 @@ class OrderUpdateStatusUseCaseTest {
         UpdateStatusResponse response = orderUpdateStatusUseCase.execute(new UpdateStatusRequest("PAID", orderIdStr));
         assertNotNull(response);
         verify(orderRepository).save(sampleOrder);
+        var eventCaptor = org.mockito.ArgumentCaptor.forClass(OrderUpdateEvent.class);
+        verify(eventPublisherPort).publishOrderUpdateEvent(eventCaptor.capture());
+        assertEquals(orderIdStr, eventCaptor.getValue().orderId());
+        assertEquals("PAID", eventCaptor.getValue().newStatus());
+        assertEquals("user-123", eventCaptor.getValue().customerId());
     }
 }

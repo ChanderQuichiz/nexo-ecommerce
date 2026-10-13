@@ -1,5 +1,6 @@
 package com.nexo.ecommerce.orders.usecases;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
@@ -16,7 +17,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nexo.ecommerce.orders.application.repositories.OrderRepository;
 import com.nexo.ecommerce.orders.application.usecases.ProcessPaymentWebhookUseCase;
+import com.nexo.ecommerce.orders.application.ports.EventPublisherPort;
 import com.nexo.ecommerce.orders.domain.entities.Order;
+import com.nexo.ecommerce.orders.domain.events.OrderPaidEvent;
 import com.nexo.ecommerce.orders.domain.value_objects.Address;
 import com.nexo.ecommerce.orders.domain.value_objects.City;
 import com.nexo.ecommerce.orders.domain.value_objects.Item;
@@ -28,6 +31,9 @@ class ProcessPaymentWebhookUseCaseTest {
 
     @Mock
     private OrderRepository orderRepository;
+
+    @Mock
+    private EventPublisherPort eventPublisherPort;
 
     @InjectMocks
     private ProcessPaymentWebhookUseCase processPaymentWebhookUseCase;
@@ -58,5 +64,10 @@ class ProcessPaymentWebhookUseCaseTest {
         when(orderRepository.findByPaymentIntentId("pi_123")).thenReturn(sampleOrder);
         processPaymentWebhookUseCase.execute("pi_123", "PAID");
         verify(orderRepository).save(sampleOrder);
+        var eventCaptor = org.mockito.ArgumentCaptor.forClass(OrderPaidEvent.class);
+        verify(eventPublisherPort).publishOrderPaidEvent(eventCaptor.capture());
+        assertEquals(sampleOrder.getId().value().toString(), eventCaptor.getValue().orderId());
+        assertEquals("PAID", eventCaptor.getValue().status());
+        assertEquals("user-123", eventCaptor.getValue().customerId());
     }
 }
