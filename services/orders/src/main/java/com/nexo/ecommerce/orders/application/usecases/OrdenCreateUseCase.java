@@ -54,16 +54,13 @@ public OrdenCreateUseCase(OrderRepository orderRepository, CatalogClient catalog
         saveOrder.getItems().forEach(item -> {
             catalogClient.reduceStock(item.productId(), item.quantity());
         });
-        OrderCreatedEvent eventObject = new OrderCreatedEvent(saveOrder.getId().toString());
-        saveOrder.getDomainEvents().forEach((event) -> {
-           if (event instanceof OrderCreatedEvent) {
+        String orderId = saveOrder.getId().value().toString();
+        OrderCreatedEvent eventObject = new OrderCreatedEvent(orderId, saveOrder.getUserId().value(), saveOrder.getStatus().name());
+
                 eventPublisherPort.publishOrderCreatedEvent(eventObject);
-            }
-        }
-        );  
 
         StringBuilder messageBuilder = new StringBuilder();
-        messageBuilder.append("Orden creada exitosamente con ID: ").append(saveOrder.getId());
+        messageBuilder.append("Orden creada exitosamente con ID: ").append(orderId);
         return new OrdenCreateResponseDto(messageBuilder.toString());
 
     }

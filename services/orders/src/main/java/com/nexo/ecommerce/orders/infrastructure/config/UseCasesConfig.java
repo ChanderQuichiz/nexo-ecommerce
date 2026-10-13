@@ -39,13 +39,13 @@ public class UseCasesConfig {
     }
 
     @Bean
-    public OrderUpdateStatusUseCase orderUpdateStatusUseCase(OrderRepository orderRepository) {
-        return new OrderUpdateStatusUseCase(orderRepository);
+    public OrderUpdateStatusUseCase orderUpdateStatusUseCase(OrderRepository orderRepository, EventPublisherPort eventPublisherPort) {
+        return new OrderUpdateStatusUseCase(orderRepository, eventPublisherPort);
     }
 
     @Bean
-    public ProcessPaymentWebhookUseCase processPaymentWebhookUseCase(OrderRepository orderRepository) {
-        return new ProcessPaymentWebhookUseCase(orderRepository);
+    public ProcessPaymentWebhookUseCase processPaymentWebhookUseCase(OrderRepository orderRepository, EventPublisherPort eventPublisherPort) {
+        return new ProcessPaymentWebhookUseCase(orderRepository, eventPublisherPort);
     }
 
     @Bean
