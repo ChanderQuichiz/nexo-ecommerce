@@ -58,6 +58,10 @@ class OrdenCreateUseCaseTest {
         assertNotNull(response);
         assertTrue(response.message().startsWith("Orden creada exitosamente"));
         verify(orderRepository, times(1)).save(any(Order.class));
-        verify(eventPublisherPort, times(1)).publishOrderCreatedEvent(any(OrderCreatedEvent.class));
+        var eventCaptor = org.mockito.ArgumentCaptor.forClass(OrderCreatedEvent.class);
+        verify(eventPublisherPort).publishOrderCreatedEvent(eventCaptor.capture());
+        assertEquals(response.message().substring(response.message().lastIndexOf(" ") + 1), eventCaptor.getValue().orderId());
+        assertEquals("user-123", eventCaptor.getValue().customerId());
+        assertEquals("CREATED", eventCaptor.getValue().status());
     }
 }

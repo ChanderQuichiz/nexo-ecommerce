@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.nexo.ecommerce.orders.domain.events.OrderCreatedEvent;
 import com.nexo.ecommerce.orders.domain.value_objects.Address;
 import com.nexo.ecommerce.orders.domain.value_objects.City;
 import com.nexo.ecommerce.orders.domain.value_objects.Date;
@@ -49,7 +48,6 @@ public class Order {
 
     private List<Item> items;
 
-    private List<Object> domainEvents;
 
  
 
@@ -69,14 +67,11 @@ public class Order {
         order.phone = phone;
         order.userId = userId;
         order.paymentIntentId = new java.util.ArrayList<>();
-        order.domainEvents = new java.util.ArrayList<>();
-        order.addDomainEvent(new OrderCreatedEvent(order.id.value().toString()));
         return order;
     }
     public Order() {
         // Default constructor for JPA
         this.paymentIntentId = new java.util.ArrayList<>();
-        this.domainEvents = new java.util.ArrayList<>();
     }
 public Order (OrderId id, UserId userId, SubTotal subtotal, ShippingFee shippingFee, Tax tax, Total total, Status status, Date date, Address address, City city, Phone phone, List<PaymentIntentId> paymentIntentId, List<Item> items) {
         this.id = id;
@@ -176,13 +171,5 @@ public Order (OrderId id, UserId userId, SubTotal subtotal, ShippingFee shipping
         return paymentIntentId;
     }
 
-    public List<Object> getDomainEvents() {
-        List<Object> events = List.copyOf(domainEvents);
-        domainEvents.clear();
-        return events;
-    }
-    public void addDomainEvent(Object event) {
-        domainEvents.add(event);
-    }
 
 }

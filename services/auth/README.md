@@ -13,13 +13,19 @@ reglas de dependencia.
 - `POST /auth/login`: valida las credenciales y devuelve un JWT firmado.
 - `GET /auth/me`: devuelve el perfil público del usuario autenticado. Requiere
   `Authorization: Bearer <token>`.
+- `GET /auth/users/{userId}`: devuelve el UUID, nombre y correo de un usuario
+  existente para consumidores autenticados como Notifications. Requiere un JWT
+  Bearer válido y responde `404` si el usuario no existe.
 - `POST /auth/logout`: revoca el JWT en Redis hasta su fecha de expiración y
   responde `204 No Content`.
 - El registro público nunca permite escoger el rol `Admin`.
 - Un administrador se provisiona de forma controlada mediante variables de
   entorno; no existe una contraseña administrativa predeterminada en el código.
 
-El contrato HTTP se mantiene en `../../docs/openapi/auth-service.yaml`.
+El contrato HTTP se mantiene en `../../docs/openapi/auth-service.yaml`. Las
+consultas de usuario usan los mismos JWT Bearer que las demás rutas privadas;
+el servicio todavía no distingue credenciales de microservicios de las de
+usuarios.
 
 ## Iniciar en Windows
 
@@ -41,8 +47,8 @@ $rng.GetBytes($jwtBytes)
 $env:JWT_SECRET = [Convert]::ToBase64String($jwtBytes)
 $rng.Dispose()
 $env:AUTH_ADMIN_NAME = "Administrador Nexo"
-$env:AUTH_ADMIN_EMAIL = "admin@tudominio.local"
-$env:AUTH_ADMIN_PASSWORD = "CAMBIA-ESTA-POR-UNA-CLAVE-SEGURA"
+$env:AUTH_ADMIN_EMAIL = "admin@gmail.com"
+$env:AUTH_ADMIN_PASSWORD = "12345678"
 ```
 
 Arranca el servicio:
@@ -95,7 +101,8 @@ arquitectónicas y las pruebas de integración:
 
 Docker debe estar activo para que Testcontainers arranque PostgreSQL y Redis
 aislados. Las pruebas de integración cubren registro, usuario duplicado, login,
-consulta `/me`, logout/revocación, endpoint protegido y el acceso administrativo.
+consultas `/me` y `/users/{userId}`, UUID inválido, usuario inexistente,
+logout/revocación, endpoints protegidos y el acceso administrativo.
 
 ## Ejemplos HTTP
 

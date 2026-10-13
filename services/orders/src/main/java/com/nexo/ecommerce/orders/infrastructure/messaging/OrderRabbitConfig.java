@@ -15,11 +15,14 @@ public class OrderRabbitConfig {
     
 
     public static final String EXCHANGE = "orders.exchange";
-    public static final String QUEUE = "orders.queue";
-    public static final String ROUTING_KEY = "orders.created";
+    public static final String QUEUE = "notifications.queue";
+    public static final String ROUTING_KEY_CREATED = "orders.created";
+    public static final String ROUTING_KEY_UPDATE = "orders.updated";
+    public static final String ROUTING_KEY_PAID = "orders.paid";
+
 
     @Bean
-    public Queue ordersQueue() {
+    public Queue notificationsQueue() {
         return new Queue(QUEUE, true);
     }
 
@@ -29,14 +32,36 @@ public class OrderRabbitConfig {
     }
 
     @Bean
-    public Binding ordersBinding(
-            Queue ordersQueue,
+    public Binding ordersCreatedNotificationBinding(
+            Queue notificationsQueue,
             DirectExchange ordersExchange
     ) {
         return BindingBuilder
-                .bind(ordersQueue)
+                .bind(notificationsQueue)
                 .to(ordersExchange)
-                .with(ROUTING_KEY);
+                .with(ROUTING_KEY_CREATED);
+    }
+
+    @Bean
+    public Binding ordersUpdateNotificationBinding(
+            Queue notificationsQueue,
+            DirectExchange ordersExchange
+    ) {
+        return BindingBuilder
+                .bind(notificationsQueue)
+                .to(ordersExchange)
+                .with(ROUTING_KEY_UPDATE);
+    }
+
+    @Bean
+    public Binding ordersPaidNotificationBinding(
+            Queue notificationsQueue,
+            DirectExchange ordersExchange
+    ) {
+        return BindingBuilder
+                .bind(notificationsQueue)
+                .to(ordersExchange)
+                .with(ROUTING_KEY_PAID);
     }
 
 

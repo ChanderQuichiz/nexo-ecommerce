@@ -119,6 +119,34 @@ class AuthControllerIT {
     void protectedEndpointRequiresBearerToken() {
         assertThat(get("/auth/me", null, String.class).getStatusCode())
                 .isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(get("/auth/users/" + UUID.randomUUID(), null, String.class).getStatusCode())
+                .isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    void getsUserContactInformationById() {
+        String email = "contact-" + UUID.randomUUID() + "@example.com";
+        ResponseEntity<JsonNode> registration = post(
+                "/auth/register",
+                Map.of("name", "Contact User", "email", email, "password", "secure-pass-123"),
+                null,
+                JsonNode.class);
+        String userId = registration.getBody().path("user").path("id").asText();
+        String token = registration.getBody().path("token").asText();
+
+        ResponseEntity<JsonNode> user = get("/auth/users/" + userId, token, JsonNode.class);
+
+        assertThat(user.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(user.getBody().path("id").asText()).isEqualTo(userId);
+        assertThat(user.getBody().path("name").asText()).isEqualTo("Contact User");
+        assertThat(user.getBody().path("email").asText()).isEqualTo(email);
+        assertThat(user.getBody().size()).isEqualTo(3);
+        assertThat(user.getBody().has("role")).isFalse();
+
+        assertThat(get("/auth/users/" + UUID.randomUUID(), token, String.class).getStatusCode())
+                .isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(get("/auth/users/not-a-uuid", token, String.class).getStatusCode())
+                .isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
     @Test
