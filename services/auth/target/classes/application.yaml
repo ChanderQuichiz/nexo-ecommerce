@@ -26,15 +26,22 @@ spring:
 
 auth:
   cors:
-    allowed-origins: ${AUTH_CORS_ALLOWED_ORIGINS:http://localhost:4200}
+    allowed-origins: ${AUTH_CORS_ALLOWED_ORIGINS:http://localhost:4200,http://127.0.0.1:4200}
   admin:
     name: ${AUTH_ADMIN_NAME:Administrador}
-    email: ${AUTH_ADMIN_EMAIL:admin@gmail.com}
-    password: ${AUTH_ADMIN_PASSWORD:administrador}
+    email: ${AUTH_ADMIN_EMAIL:}
+    password: ${AUTH_ADMIN_PASSWORD:}
   jwt:
-    secret: ${JWT_SECRET:TuClaveSecretaSuperSeguraYMuyLargaParaJWT1234567890}
+    secret: ${JWT_SECRET:}
     expiration: ${JWT_EXPIRATION:15m}
     issuer: ${JWT_ISSUER:nexo-ecommerce}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+  instance:
+    prefer-ip-address: true
 
 management:
   endpoints:
