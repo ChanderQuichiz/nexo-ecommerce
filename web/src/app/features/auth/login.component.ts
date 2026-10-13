@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { finalize, timeout } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -102,11 +104,6 @@ import { AuthService } from '../../core/auth.service';
           </div>
         </form>
 
-        <div class="mt-4 p-4 bg-indigo-50 rounded-lg text-xs text-indigo-700">
-          <p class="font-bold mb-1 underline">Cuentas de prueba:</p>
-          <p>Cliente: client&#64;ecommerce.com / client123</p>
-          <p>Admin: admin&#64;ecommerce.com / admin123</p>
-        </div>
       </div>
     </div>
   `,
@@ -123,12 +120,16 @@ export class LoginComponent {
   ) {}
 
   onSubmit(): void {
+    if (this.loading) return;
     if (!this.email || !this.password) return;
 
     this.loading = true;
     this.errorMessage = '';
 
-    this.authService.login(this.email, this.password).subscribe({
+    this.authService.login(this.email.trim(), this.password).pipe(
+      timeout(8000),
+      finalize(() => this.loading = false),
+    ).subscribe({
       next: () => {
         if (this.authService.isAdmin()) {
           this.router.navigate(['/admin/products']);
@@ -136,9 +137,10 @@ export class LoginComponent {
           this.router.navigate(['/catalog']);
         }
       },
-      error: () => {
-        this.errorMessage = 'Credenciales inválidas. Por favor intente de nuevo.';
-        this.loading = false;
+      error: (error: unknown) => {
+        this.errorMessage = error instanceof HttpErrorResponse && error.status === 401
+          ? 'Credenciales inválidas. Inténtalo de nuevo.'
+          : 'No se pudo conectar con el servicio. Inténtalo de nuevo.';
       },
     });
   }

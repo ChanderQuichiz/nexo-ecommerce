@@ -1,8 +1,9 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { AuthService } from './auth.service';
 import { LoadingService } from './loading.service';
-import { finalize } from 'rxjs/operators';
+import { catchError, finalize, throwError } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -11,7 +12,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   loadingService.show();
 
-  if (token) {
+  if (token && req.url.startsWith(`${environment.apiUrl}/`)) {
     req = req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`
@@ -20,6 +21,12 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   }
 
   return next(req).pipe(
+    catchError(error => {
+      if (error instanceof HttpErrorResponse && error.status === 401 && token) {
+        authService.clearSession();
+      }
+      return throwError(() => error);
+    }),
     finalize(() => loadingService.hide())
   );
 };

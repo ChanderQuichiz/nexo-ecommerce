@@ -16,7 +16,7 @@ import com.nexo.ecommerce.orders.application.ports.PaymentPort;
 @Service
 public class StripeService implements PaymentPort {
 
-    @Value("${stripe.apiKey}")
+    @Value("${stripe.api-key}")
     private String secretKey;
 
     @Value("${constants.currency}")

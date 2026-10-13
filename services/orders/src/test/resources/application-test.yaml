@@ -7,6 +7,10 @@ spring:
     hibernate:
       ddl-auto: validate
 
+eureka:
+  client:
+    enabled: false
+
 constants:
   interest-rate: 0.18
   shipping-fee: 10.00
