@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.nexo.ecommerce.orders.application.ports.PaymentPort;
+import com.nexo.ecommerce.orders.application.ports.PaymentPort.PaymentIntentResult;
 import com.nexo.ecommerce.orders.application.repositories.OrderRepository;
 import com.nexo.ecommerce.orders.application.usecases.CreateIntentPaymentUseCase;
 import com.nexo.ecommerce.orders.application.usecases.dto.CreateIntentPaymentRequest;
@@ -69,10 +70,12 @@ class CreateIntentPaymentUseCaseTest {
     @DisplayName("CreateIntentPaymentUseCase debe crear intento de pago")
     void testCreateIntentPayment() {
         when(orderRepository.findById(orderIdStr)).thenReturn(sampleOrder);
-        when(paymentPort.createPaymentIntent(eq(orderIdStr), any(BigDecimal.valueOf(107.00).getClass()), eq("USD"))).thenReturn("pi_123");
+        when(paymentPort.createPaymentIntent(eq(orderIdStr), any(BigDecimal.valueOf(107.00).getClass()), eq("USD")))
+                .thenReturn(new PaymentIntentResult("pi_123", "cs_test_123"));
         
         CreateIntentPaymentResponse response = createIntentPaymentUseCase.execute(new CreateIntentPaymentRequest(orderIdStr));
         assertNotNull(response);
         assertEquals("pi_123", response.intentId());
+        assertEquals("cs_test_123", response.clientSecret());
     }
 }

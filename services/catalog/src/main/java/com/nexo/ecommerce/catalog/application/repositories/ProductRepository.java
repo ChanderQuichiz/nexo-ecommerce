@@ -23,4 +23,9 @@ public interface ProductRepository {
     boolean existsByNameIgnoreCase(String name);
 
     Optional<Product> findByIdForStockUpdate(String productId);
+
+    boolean existsByNameIgnoreCaseAndIdNot(
+            String name,
+            String productId
+    );
 }

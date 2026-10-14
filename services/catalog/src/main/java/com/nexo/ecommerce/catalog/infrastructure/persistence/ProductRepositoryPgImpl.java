@@ -94,4 +94,17 @@ public class ProductRepositoryPgImpl
 
         return value.trim();
     }
+
+    @Override
+    public boolean existsByNameIgnoreCaseAndIdNot(
+            String name,
+            String productId
+    ) {
+        return productRepositoryJpa
+                .existsByNameIgnoreCaseAndIdNot(
+                        name,
+                        productId
+                );
+    }
+
 }

@@ -1,0 +1,188 @@
+openapi: 3.0.3
+
+info:
+  title: Auth Service
+  description: Handles user authentication, registration, role management, and internal user queries.
+  version: 1.1.0
+
+servers:
+  - url: https://api.ecommerce.com/auth
+
+paths:
+  /login:
+    post:
+      summary: User login
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+
+  /register:
+    post:
+      summary: User registration
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Email already registered or invalid request
+
+  /me:
+    get:
+      summary: Get current user information
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Current user data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          description: Authentication is required
+
+  /logout:
+    post:
+      summary: Revoke session
+      operationId: logout
+      description: Adds the current JWT to a blocklist in Redis to prevent further use.
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Session revoked successfully
+        '401':
+          description: Authentication is required
+
+  /users/{userId}:
+    get:
+      summary: Get user information by ID
+      description: Internal endpoint used by authorized microservices such as Notifications.
+      operationId: getUserById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: User UUID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User information
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                  - name
+                  - email
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    example: 550e8400-e29b-41d4-a716-446655440000
+                  name:
+                    type: string
+                    example: Otar Vega
+                  email:
+                    type: string
+                    format: email
+                    example: otar@example.com
+        '400':
+          description: Invalid user ID
+        '401':
+          description: Authentication is required
+        '403':
+          description: Requesting service is not authorized
+        '404':
+          description: User not found
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - role
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        role:
+          type: string
+          enum:
+            - Admin
+            - Client
+
+    AuthResponse:
+      type: object
+      required:
+        - user
+        - token
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string

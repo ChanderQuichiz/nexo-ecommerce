@@ -3,6 +3,7 @@ package com.nexo.ecommerce.orders.application.usecases;
 import java.math.BigDecimal;
 
 import com.nexo.ecommerce.orders.application.ports.PaymentPort;
+import com.nexo.ecommerce.orders.application.ports.PaymentPort.PaymentIntentResult;
 import com.nexo.ecommerce.orders.application.repositories.OrderRepository;
 import com.nexo.ecommerce.orders.application.usecases.dto.CreateIntentPaymentRequest;
 import com.nexo.ecommerce.orders.application.usecases.dto.CreateIntentPaymentResponse;
@@ -26,12 +27,12 @@ public class CreateIntentPaymentUseCase {
             BigDecimal amount = existingOrder.getTotal().value();
             String currency = "USD";
 
-            String intentId = paymentPort.createPaymentIntent(request.orderId(), amount, currency);
-            PaymentIntentId paymentIntentId = new PaymentIntentId(intentId);
+            PaymentIntentResult paymentIntent = paymentPort.createPaymentIntent(request.orderId(), amount, currency);
+            PaymentIntentId paymentIntentId = new PaymentIntentId(paymentIntent.id());
             existingOrder.addPaymentIntentId(paymentIntentId);
             orderRepository.save(existingOrder);
 
-            return new CreateIntentPaymentResponse(intentId);
+            return new CreateIntentPaymentResponse(paymentIntent.id(), paymentIntent.clientSecret());
         }
 
 }

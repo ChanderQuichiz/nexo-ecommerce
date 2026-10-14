@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { Order } from '../../core/models';
+import { NotificationService } from '../../core/notification.service';
 
 @Component({
   selector: 'app-order-confirmation',
@@ -116,7 +117,10 @@ import { Order } from '../../core/models';
 export class OrderConfirmationComponent implements OnInit {
   order?: Order;
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private notificationService: NotificationService,
+  ) {
     const navigation = this.router.getCurrentNavigation();
     this.order = navigation?.extras?.state?.['order'];
   }
@@ -128,6 +132,16 @@ export class OrderConfirmationComponent implements OnInit {
   }
 
   downloadPdf(): void {
-    alert('Simulando descarga de PDF para la orden ' + this.order?.id);
+    if (!this.order) return;
+    this.notificationService.downloadReceipt(this.order.id).subscribe({
+      next: (pdf) => {
+        const url = URL.createObjectURL(pdf);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `receipt-${this.order!.id}.pdf`;
+        link.click();
+        URL.revokeObjectURL(url);
+      },
+    });
   }
 }

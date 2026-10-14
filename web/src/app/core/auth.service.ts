@@ -6,14 +6,29 @@ import { AuthResponse, User } from './models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  private static readonly tokenStorageKey = 'nexo.accessToken';
+  private static readonly userStorageKey = 'nexo.currentUser';
   private currentUserSignal = signal<User | null>(null);
   private accessToken: string | null = null;
   currentUser = this.currentUserSignal.asReadonly();
 
   constructor(private http: HttpClient) {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      const token = localStorage.getItem(AuthService.tokenStorageKey);
+      const userJson = localStorage.getItem(AuthService.userStorageKey);
+      if (token && userJson) {
+        try {
+          const user = JSON.parse(userJson) as User;
+          if (user?.id && user.email && user.role) {
+            this.accessToken = token;
+            this.currentUserSignal.set(user);
+          } else {
+            this.clearSession();
+          }
+        } catch {
+          this.clearSession();
+        }
+      }
     }
   }
 
@@ -37,11 +52,19 @@ export class AuthService {
   clearSession(): void {
     this.accessToken = null;
     this.currentUserSignal.set(null);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(AuthService.tokenStorageKey);
+      localStorage.removeItem(AuthService.userStorageKey);
+    }
   }
 
   private setSession(response: AuthResponse): void {
     this.accessToken = response.token;
     this.currentUserSignal.set(response.user);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(AuthService.tokenStorageKey, response.token);
+      localStorage.setItem(AuthService.userStorageKey, JSON.stringify(response.user));
+    }
   }
 
   isAdmin(): boolean {

@@ -43,6 +43,12 @@ spring:
             - Path=/api/catalog/**
           filters:
             - StripPrefix=1
+        - id: notifications-service
+          uri: ${NOTIFICATIONS_ROUTE_URI:lb://NOTIFICATIONS-SERVICE}
+          predicates:
+            - Path=/api/notifications/**
+          filters:
+            - StripPrefix=1
         - id: stripe-webhook
           uri: ${ORDERS_ROUTE_URI:lb://ORDERS-SERVICE}
           predicates:

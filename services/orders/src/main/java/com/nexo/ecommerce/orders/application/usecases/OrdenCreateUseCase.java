@@ -16,6 +16,7 @@ import java.util.List;
 import com.nexo.ecommerce.orders.application.client.CatalogClient;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
+import com.nexo.ecommerce.orders.application.client.dto.ReduceStockRequest;
 import com.nexo.ecommerce.orders.application.ports.EventPublisherPort;
 public class OrdenCreateUseCase {
     private final OrderRepository orderRepository;
@@ -52,7 +53,7 @@ public OrdenCreateUseCase(OrderRepository orderRepository, CatalogClient catalog
         this.orderRepository.save(saveOrder);
         
         saveOrder.getItems().forEach(item -> {
-            catalogClient.reduceStock(item.productId(), item.quantity());
+            catalogClient.reduceStock(item.productId(), new ReduceStockRequest(item.quantity()));
         });
         String orderId = saveOrder.getId().value().toString();
         OrderCreatedEvent eventObject = new OrderCreatedEvent(orderId, saveOrder.getUserId().value(), saveOrder.getStatus().name());

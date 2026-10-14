@@ -1,0 +1,264 @@
+openapi: 3.0.3
+info:
+  title: Catalog Service
+  description: Manages product inventory, images and storefront catalog.
+  version: 1.1.0
+servers:
+  - url: https://api.ecommerce.com/catalog
+    description: Production API
+  - url: http://localhost:8081/catalog
+    description: Local development
+paths:
+  /:
+    get:
+      summary: List or search active products
+      parameters:
+        - name: search
+          in: query
+          required: false
+          schema: { type: string }
+        - name: category
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: List of active products
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Product' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+    post:
+      summary: Create a product
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [product, image]
+              properties:
+                product: { $ref: '#/components/schemas/CreateProductRequest' }
+                image: { type: string, format: binary }
+            encoding:
+              product: { contentType: application/json }
+              image: { contentType: 'image/jpeg, image/png, image/webp' }
+      responses:
+        '201':
+          description: Product created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+  /admin:
+    get:
+      summary: List all products for management
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Complete product list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Product' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+  /{id}:
+    parameters:
+      - $ref: '#/components/parameters/ProductId'
+    get:
+      summary: Get product details
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+    put:
+      summary: Update a product
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [product]
+              properties:
+                product: { $ref: '#/components/schemas/UpdateProductRequest' }
+                image: { type: string, format: binary }
+            encoding:
+              product: { contentType: application/json }
+              image: { contentType: 'image/jpeg, image/png, image/webp' }
+      responses:
+        '200':
+          description: Product updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Product' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409': { $ref: '#/components/responses/Conflict' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+  /{id}/active:
+    patch:
+      summary: Toggle product active status
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      responses:
+        '204': { description: Product status toggled }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+  /validate-stock:
+    post:
+      summary: Validate availability for a list of items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ValidateStockRequest' }
+      responses:
+        '200':
+          description: Stock validation result
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ValidateStockResponse' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+  /{id}/stock:
+    patch:
+      summary: Deduct product stock after an order
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProductId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReduceStockRequest' }
+      responses:
+        '200': { description: Stock updated }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '500': { $ref: '#/components/responses/InternalServerError' }
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    ProductId:
+      name: id
+      in: path
+      required: true
+      description: Product UUID
+      schema: { type: string, format: uuid }
+  schemas:
+    Product:
+      type: object
+      required: [id, name, price, stock, imageUrl, category, active]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string, maxLength: 150 }
+        description: { type: string, nullable: true, maxLength: 2000 }
+        price: { type: number, format: double, minimum: 0 }
+        stock: { type: integer, minimum: 0 }
+        imageUrl: { type: string, format: uri }
+        category: { type: string, maxLength: 100 }
+        active: { type: boolean }
+    CreateProductRequest:
+      type: object
+      required: [name, price, stock, category]
+      properties:
+        name: { type: string, maxLength: 150 }
+        description: { type: string, nullable: true, maxLength: 2000 }
+        price: { type: number, format: double, minimum: 0 }
+        stock: { type: integer, minimum: 0 }
+        category: { type: string, maxLength: 100 }
+    UpdateProductRequest:
+      type: object
+      required: [name, price, stock, category]
+      properties:
+        name: { type: string, maxLength: 150 }
+        description: { type: string, nullable: true, maxLength: 2000 }
+        price: { type: number, format: double, minimum: 0 }
+        stock: { type: integer, minimum: 0 }
+        category: { type: string, maxLength: 100 }
+    ReduceStockRequest:
+      type: object
+      required: [quantity]
+      properties:
+        quantity: { type: integer, minimum: 1 }
+    ValidateStockRequest:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          minItems: 1
+          items: { $ref: '#/components/schemas/StockItemRequest' }
+    StockItemRequest:
+      type: object
+      required: [productId, quantity]
+      properties:
+        productId: { type: string, format: uuid }
+        quantity: { type: integer, minimum: 1 }
+    ValidateStockResponse:
+      type: object
+      required: [available, items]
+      properties:
+        available: { type: boolean }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/StockItemResponse' }
+    StockItemResponse:
+      type: object
+      required: [productId, hasStock, remainingStock]
+      properties:
+        productId: { type: string, format: uuid }
+        hasStock: { type: boolean }
+        remainingStock: { type: integer, minimum: 0 }
+    ApiError:
+      type: object
+      required: [timestamp, status, error, message]
+      properties:
+        timestamp: { type: string, format: date-time }
+        status: { type: integer }
+        error: { type: string }
+        message: { type: string }
+  responses:
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    NotFound:
+      description: Product not found
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    Conflict:
+      description: A product with the same name already exists
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ApiError' }

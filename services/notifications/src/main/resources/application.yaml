@@ -1,0 +1,71 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: notifications-service
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: ${RABBITMQ_RETRY_MAX_ATTEMPTS:3}
+          initial-interval: ${RABBITMQ_RETRY_INITIAL_INTERVAL:1000ms}
+          multiplier: ${RABBITMQ_RETRY_MULTIPLIER:2}
+          max-interval: ${RABBITMQ_RETRY_MAX_INTERVAL:5000ms}
+        default-requeue-rejected: false
+  mail:
+    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
+    port: ${MAIL_PORT:2525}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: ${MAIL_SMTP_AUTH:true}
+          starttls:
+            enable: ${MAIL_STARTTLS_ENABLED:true}
+    test-connection: false
+
+server:
+  port: ${SERVER_PORT:8083}
+
+clients:
+  orders:
+    url: ${ORDERS_SERVICE_URL:}
+  auth:
+    url: ${AUTH_SERVICE_URL:}
+    internal-api-key: ${INTERNAL_API_KEY:}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+    enabled: ${EUREKA_CLIENT_ENABLED:true}
+
+messaging:
+  orders:
+    exchange: ${ORDERS_EXCHANGE:orders.exchange}
+    queue: ${ORDERS_NOTIFICATIONS_QUEUE:notifications.queue}
+    routing-keys:
+      created: ${ORDERS_CREATED_ROUTING_KEY:orders.created}
+      updated: ${ORDERS_UPDATED_ROUTING_KEY:orders.updated}
+      paid: ${ORDERS_PAID_ROUTING_KEY:orders.paid}
+
+notifications:
+  mail:
+    from: ${MAIL_FROM:no-reply@nexo-ecommerce.com}
+  receipt:
+    currency: ${RECEIPT_CURRENCY:PEN}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always

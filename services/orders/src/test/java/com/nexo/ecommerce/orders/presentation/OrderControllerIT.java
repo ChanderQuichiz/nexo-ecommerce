@@ -16,6 +16,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.nexo.ecommerce.orders.BaseIntegrationTest;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
+import com.nexo.ecommerce.orders.application.ports.PaymentPort.PaymentIntentResult;
 import com.nexo.ecommerce.orders.application.usecases.dto.CreateIntentPaymentRequest;
 import com.nexo.ecommerce.orders.application.usecases.dto.CreateIntentPaymentResponse;
 import com.nexo.ecommerce.orders.application.usecases.dto.OrdenCreateRequestDto;
@@ -32,7 +33,8 @@ class OrderControllerIT extends BaseIntegrationTest {
     @BeforeEach
     void setUp() {
         when(catalogClient.validateStock(any())).thenReturn(new ValidateStockResponse(true, List.of()));
-        when(paymentPort.createPaymentIntent(any(), any(), any())).thenReturn("pi_test_12345");
+        when(paymentPort.createPaymentIntent(any(), any(), any()))
+                .thenReturn(new PaymentIntentResult("pi_test_12345", "cs_test_123"));
     }
 
     @Test
