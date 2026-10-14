@@ -28,10 +28,10 @@ services:
       DATABASE_USERNAME: auth
       DATABASE_PASSWORD: auth
       REDIS_HOST: auth-redis
-      JWT_SECRET: ${JWT_SECRET:?Configura JWT_SECRET con una clave Base64 de al menos 32 bytes}
-      AUTH_ADMIN_NAME: ${AUTH_ADMIN_NAME:-Administrador}
-      AUTH_ADMIN_EMAIL: ${AUTH_ADMIN_EMAIL:-}
-      AUTH_ADMIN_PASSWORD: ${AUTH_ADMIN_PASSWORD:-}
+      JWT_SECRET: mysecretkeyjwt
+      AUTH_ADMIN_NAME: Administrador
+      AUTH_ADMIN_EMAIL: admin@gmail.com
+      AUTH_ADMIN_PASSWORD: 12345678
     depends_on:
       discovery:
         condition: service_started
@@ -136,6 +136,8 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: nexo
       RABBITMQ_DEFAULT_PASS: nexo
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
     ports:
       - "127.0.0.1:15672:15672"
     healthcheck:
@@ -148,3 +150,4 @@ volumes:
   auth-postgres-data:
   orders-postgres-data:
   catalog-postgres-data:
+  rabbitmq-data:
