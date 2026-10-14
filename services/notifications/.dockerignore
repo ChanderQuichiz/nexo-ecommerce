@@ -1,0 +1,13 @@
+target/
+.idea/
+.git/
+.env
+.env.example
+*.log
+*.tmp
+*.temp
+*.swp
+*~
+docs/
+README.md
+docker-compose.yaml
