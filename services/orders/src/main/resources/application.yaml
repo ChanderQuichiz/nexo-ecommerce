@@ -42,8 +42,6 @@ resilience4j:
         wait-duration-in-open-state: 10s
 
 constants:
-  interest-rate: ${INTEREST_RATE}
-  shipping-fee: ${SHIPPING_FEE}
   currency: ${CURRENCY}
 stripe:
   api-key: ${STRIPE_API_KEY}

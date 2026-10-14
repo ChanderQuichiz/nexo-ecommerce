@@ -24,7 +24,84 @@ AUTH_ADMIN_EMAIL=admin@example.com
 AUTH_ADMIN_PASSWORD=una-clave-segura
 STRIPE_API_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
+AUTH_CORS_ALLOWED_ORIGINS=https://tu-frontend.example.com
+GATEWAY_CORS_ALLOWED_ORIGINS=https://tu-frontend.example.com
 ```
+
+Usa [`.env.example`](./.env.example) como plantilla. En producción, inyecta
+los secretos con el gestor de secretos de tu plataforma; no uses los valores
+por defecto de desarrollo. `AUTH_ADMIN_NAME`, `AUTH_ADMIN_EMAIL` y
+`AUTH_ADMIN_PASSWORD` solo se utilizan para crear o actualizar el usuario
+administrador inicial. Cambiar esas variables no cambia las credenciales de
+usuarios ya existentes.
+
+La plantilla contiene también las variables opcionales que tienen valores por
+defecto en Spring Boot, para que puedas trasladar el inventario completo a ECS.
+Las variables con nombres `*_ROUTE_URI`, `EUREKA_URL`, `ORDERS_SERVICE_URL` y
+`AUTH_SERVICE_URL` deben apuntar a los nombres DNS o Service Connect de ECS
+cuando no uses la red local de Docker Compose.
+
+`AUTH_CORS_ALLOWED_ORIGINS` se consume por Auth y
+`GATEWAY_CORS_ALLOWED_ORIGINS` por Gateway. Son listas separadas por comas y
+deben contener únicamente los orígenes reales del frontend, incluyendo
+protocolo y puerto cuando corresponda; no agregues `/` al final.
+
+`CURRENCY` es configuración de negocio, no un secreto, y se mantiene como
+variable de entorno porque afecta los pagos y los comprobantes. Actualmente
+Orders usa envío gratuito como una constante del dominio y no existe todavía
+un flujo de intereses; por eso no se configuran `SHIPPING_FEE` ni
+`INTEREST_RATE` en `.env`.
+
+El frontend se publica como archivos estáticos en S3 detrás de CloudFront.
+Angular no puede leer variables de ECS ni `.env` después de compilarse, por lo
+que debes generar su configuración antes del build:
+
+```bash
+cd web
+npm run build:production
+```
+
+El comando carga automáticamente [`.env.production`](./.env.production).
+Para desarrollo local usa:
+
+```bash
+cd web
+npm run build:local
+```
+
+que carga [`.env`](./.env). `.env` y `.env.production` están ignorados por
+Git. En CI/CD, configura las variables de `.env.production` como
+variables/secrets del pipeline; no subas `.env.production`.
+
+El comando genera `public/runtime-config.js` y después crea `dist/web`, que es
+la carpeta que debes subir a S3. Para desarrollo, `npm run build` usa `/api`
+como URL predeterminada y no requiere una clave Stripe. Nunca coloques
+`STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET`, `JWT_SECRET`, credenciales AWS,
+contraseñas de base de datos o SMTP en el código del frontend.
+
+Configura en CloudFront una respuesta de error `403` y otra `404` que devuelvan
+`/index.html` con estado `200`, para que funcionen las rutas de Angular.
+
+### Variables por Task Definition de ECS
+
+El archivo [`.env.example`](./.env.example) está comentado por tarea. En ECS
+no copies automáticamente todo el archivo en cada task: agrega únicamente las
+variables de la tarea correspondiente. Las variables `AUTH_DATABASE_*`,
+`ORDERS_DATABASE_*` y `CATALOG_DATABASE_*` son nombres auxiliares de Compose;
+en cada task de Spring se inyectan como `DATABASE_URL`,
+`DATABASE_USERNAME` y `DATABASE_PASSWORD`.
+
+| Task Definition | Variables principales |
+| --- | --- |
+| `discovery` | `DISCOVERY_BIND_ADDRESS`, `DISCOVERY_PORT` |
+| `gateway` | `GATEWAY_BIND_ADDRESS`, `GATEWAY_PORT`, `GATEWAY_CORS_ALLOWED_ORIGINS`, `EUREKA_URL`, `AUTH_ROUTE_URI`, `ORDERS_ROUTE_URI`, `CATALOG_ROUTE_URI`, `NOTIFICATIONS_ROUTE_URI` |
+| `auth` | `SERVER_PORT`, `EUREKA_URL`, `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`, `INTERNAL_API_KEY`, `JWT_SECRET`, `JWT_EXPIRATION`, `JWT_ISSUER`, `AUTH_CORS_ALLOWED_ORIGINS`, `AUTH_ADMIN_NAME`, `AUTH_ADMIN_EMAIL`, `AUTH_ADMIN_PASSWORD` |
+| `orders` | `EUREKA_URL`, `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USERNAME`, `RABBITMQ_PASSWORD`, `CURRENCY`, `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET` |
+| `catalog` | `EUREKA_SERVER_URL`, `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD`, `SERVER_PORT`, `AWS_REGION`, `AWS_S3_BUCKET`, `CDN_URL`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` |
+| `notifications` | `SERVER_PORT`, `EUREKA_SERVER_URL`, `EUREKA_CLIENT_ENABLED`, `RABBITMQ_HOST`, `RABBITMQ_PORT`, `RABBITMQ_USERNAME`, `RABBITMQ_PASSWORD`, `ORDERS_SERVICE_URL`, `AUTH_SERVICE_URL`, `INTERNAL_API_KEY`, `RECEIPT_CURRENCY`, `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_SMTP_AUTH`, `MAIL_STARTTLS_ENABLED`, `MAIL_FROM` y variables `RABBITMQ_RETRY_*` |
+
+`WEB_API_URL` y `STRIPE_PUBLIC_KEY` no pertenecen a ninguna task de ECS:
+se usan únicamente al compilar Angular antes de subir `dist/web` a S3.
 
 Para Gmail SMTP:
 

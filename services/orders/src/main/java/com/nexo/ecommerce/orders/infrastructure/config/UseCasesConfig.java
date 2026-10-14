@@ -2,6 +2,7 @@ package com.nexo.ecommerce.orders.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.nexo.ecommerce.orders.application.client.CatalogClient;
 import com.nexo.ecommerce.orders.application.ports.EventPublisherPort;
@@ -49,7 +50,10 @@ public class UseCasesConfig {
     }
 
     @Bean
-    public CreateIntentPaymentUseCase createIntentPaymentUseCase(OrderRepository orderRepository, PaymentPort paymentPort) {
-        return new CreateIntentPaymentUseCase(orderRepository, paymentPort);
+    public CreateIntentPaymentUseCase createIntentPaymentUseCase(
+            OrderRepository orderRepository,
+            PaymentPort paymentPort,
+            @Value("${constants.currency}") String currency) {
+        return new CreateIntentPaymentUseCase(orderRepository, paymentPort, currency);
     }
 }
