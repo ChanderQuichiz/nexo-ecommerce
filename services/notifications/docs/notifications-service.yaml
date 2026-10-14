@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: Nexo Notifications Service API
+  version: 1.0.0
+  description: |
+    API de Notifications para descargar comprobantes de órdenes pagadas.
+
+    Este endpoint debe exponerse mediante API Gateway, que temporalmente es responsable
+    de validar el JWT. La protección directa del microservicio todavía está pendiente.
+    `X-Internal-Api-Key` se utiliza únicamente en llamadas internas desde Notifications
+    hacia Auth Service; no protege este endpoint público.
+servers:
+  - url: http://localhost:8083/notifications
+    description: Entorno local
+paths:
+  /generate-receipt/{orderId}:
+    get:
+      summary: Descargar el comprobante de una orden
+      description: El comprobante está disponible únicamente después de que la orden haya sido pagada.
+      operationId: generateOrderReceipt
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: Identificador UUID de la orden.
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Comprobante PDF generado correctamente.
+          headers:
+            Content-Disposition:
+              description: Nombre sugerido para descargar el comprobante.
+              schema:
+                type: string
+                example: attachment; filename="receipt-550e8400-e29b-41d4-a716-446655440000.pdf"
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: El ID proporcionado no es un UUID válido.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '401':
+          description: Token de acceso ausente o inválido; respuesta gestionada por API Gateway.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '403':
+          description: El usuario autenticado no tiene autorización; respuesta gestionada por API Gateway.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '404':
+          description: La orden o el usuario asociado no existe.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '409':
+          description: La orden todavía no se encuentra pagada.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '502':
+          description: Orders Service o Auth Service no está disponible.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+        '500':
+          description: Error interno al generar el comprobante.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    ApiError:
+      type: object
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+          format: int32
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
