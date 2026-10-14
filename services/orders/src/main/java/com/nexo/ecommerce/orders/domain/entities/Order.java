@@ -20,6 +20,7 @@ import com.nexo.ecommerce.orders.domain.value_objects.UserId;
 
 
 public class Order {
+    private static final BigDecimal FREE_SHIPPING_FEE = BigDecimal.ZERO.setScale(2);
   
     private OrderId id;
 
@@ -107,8 +108,7 @@ public Order (OrderId id, UserId userId, SubTotal subtotal, ShippingFee shipping
     }
 
     public ShippingFee calculateShippingFee() {
-        BigDecimal shippingFeeValue = new BigDecimal("0.00");
-        return new ShippingFee(shippingFeeValue);
+        return new ShippingFee(FREE_SHIPPING_FEE);
     }
 
     public Tax calculateTax() {

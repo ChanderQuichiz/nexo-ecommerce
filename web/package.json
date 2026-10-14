@@ -4,7 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "node scripts/generate-runtime-config.mjs --env=.env && ng build",
+    "build:local": "node scripts/generate-runtime-config.mjs --env=.env && ng build --configuration development",
+    "build:production": "node scripts/generate-runtime-config.mjs --env=.env.production --required && ng build --configuration production",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
