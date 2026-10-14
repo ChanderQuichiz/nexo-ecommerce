@@ -107,11 +107,6 @@ services:
       RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
       RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-nexo}
       RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-nexo}
-      ORDERS_NOTIFICATIONS_QUEUE: notifications.queue
-      ORDERS_EXCHANGE: orders.exchange
-      ORDERS_CREATED_ROUTING_KEY: orders.created
-      ORDERS_UPDATED_ROUTING_KEY: orders.updated
-      ORDERS_PAID_ROUTING_KEY: orders.paid
       ORDERS_SERVICE_URL: ${ORDERS_SERVICE_URL:-http://orders:8080}
       AUTH_SERVICE_URL: ${AUTH_SERVICE_URL:-http://auth:8084}
       INTERNAL_API_KEY: ${INTERNAL_API_KEY:-local-nexo-internal-key}
