@@ -28,6 +28,9 @@ import { ProductDetailsDrawerComponent } from './product-details-drawer.componen
           @if (showAddForm()) {
             <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
               <h3 class="text-lg font-semibold mb-4 text-slate-700">Añadir Nuevo Producto</h3>
+              @if (errorMessage()) {
+                <p class="mb-4 text-sm text-red-600">{{ errorMessage() }}</p>
+              }
               <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="space-y-4">
                   <input
@@ -93,7 +96,7 @@ import { ProductDetailsDrawerComponent } from './product-details-drawer.componen
 
                 <button
                   (click)="addProduct()"
-                  [disabled]="!newProduct.name || newProduct.price <= 0 || loading()"
+                  [disabled]="!newProduct.name || newProduct.price <= 0 || !selectedFile || loading()"
                   class="md:col-span-2 lg:col-span-3 bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors shadow-lg disabled:opacity-50"
                 >
                   Guardar y Publicar Producto
@@ -159,6 +162,7 @@ export class AdminProductsComponent {
   selectedProduct = signal<Product | null>(null);
   
   loading = signal(false);
+  errorMessage = signal('');
   imagePreview = signal<string | null>(null);
   selectedFile: File | null = null;
 
@@ -180,10 +184,17 @@ export class AdminProductsComponent {
     this.productService.getProducts().subscribe((prods) => this.products.set(prods));
   }
 
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
+  onFileSelected(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
     if (file) {
+      if (!file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) {
+        this.errorMessage.set('Selecciona una imagen válida de máximo 5 MB.');
+        this.selectedFile = null;
+        this.imagePreview.set(null);
+        return;
+      }
       this.selectedFile = file;
+      this.errorMessage.set('');
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview.set(reader.result as string);
@@ -193,16 +204,25 @@ export class AdminProductsComponent {
   }
 
   addProduct() {
-    if (!this.newProduct.name || this.newProduct.price <= 0) return;
+    if (!this.newProduct.name || this.newProduct.price <= 0 || !this.selectedFile) {
+      this.errorMessage.set('El nombre, el precio y una imagen son obligatorios.');
+      return;
+    }
 
     this.loading.set(true);
     this.productService
       .addProduct(this.newProduct, this.selectedFile || undefined)
-      .subscribe(() => {
+      .subscribe({
+        next: () => {
         this.loadProducts();
         this.resetForm();
         this.loading.set(false);
         this.showAddForm.set(false);
+        },
+        error: () => {
+          this.loading.set(false);
+          this.errorMessage.set('No se pudo crear el producto.');
+        },
       });
   }
 
@@ -218,6 +238,7 @@ export class AdminProductsComponent {
     };
     this.selectedFile = null;
     this.imagePreview.set(null);
+    this.errorMessage.set('');
   }
 
   handleSave(product: Product) {

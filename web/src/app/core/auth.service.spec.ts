@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { AuthService } from './auth.service';
 import { authInterceptor } from './auth.interceptor';
@@ -10,6 +11,7 @@ describe('AuthService', () => {
   let http: HttpTestingController;
 
   beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({
       providers: [provideHttpClient(withInterceptors([authInterceptor])), provideHttpClientTesting()],
     });
@@ -18,6 +20,19 @@ describe('AuthService', () => {
   });
 
   afterEach(() => http.verify());
+
+  it('restores the session after a browser refresh', () => {
+    localStorage.setItem('nexo.accessToken', 'stored-token');
+    localStorage.setItem('nexo.currentUser', JSON.stringify({
+      id: 'client-1', email: 'client@example.com', name: 'Client', role: 'Client',
+    }));
+
+    const restored = new AuthService(TestBed.inject(HttpClient));
+
+    expect(restored.isAuthenticated()).toBe(true);
+    expect(restored.currentUser()?.id).toBe('client-1');
+    expect(restored.getToken()).toBe('stored-token');
+  });
 
   it('uses the gateway for login and sends the token on logout', () => {
     service.login('client@example.com', 'password123').subscribe();

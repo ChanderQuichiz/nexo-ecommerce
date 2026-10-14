@@ -1,4 +1,7 @@
 .idea/
 .vscode/
+.env
+.env.*
+!.env.example
 /services/discovery/target/
 /services/gateway/target/

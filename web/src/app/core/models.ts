@@ -1,5 +1,5 @@
 export interface Product {
-  id: number;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -18,7 +18,11 @@ export type OrderStatus =
   | 'PENDING'
   | 'PAID'
   | 'FAILED'
+  | 'CANCELED'
   | 'CANCELLED'
+  | 'CREATED'
+  | 'SHIPPED'
+  | 'DELIVERED'
   | 'pending'
   | 'Pagado'
   | 'En preparación'

@@ -60,7 +60,7 @@ public class Order {
         order.shippingFee = order.calculateShippingFee();
         order.tax = order.calculateTax();
         order.total = order.calculateTotal();
-        order.status = Status.CREATED;
+        order.status = Status.PENDING;
         order.date = new Date(LocalDateTime.now());
         order.address = address;
         order.city = city;

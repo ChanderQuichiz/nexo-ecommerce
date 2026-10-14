@@ -23,9 +23,10 @@ public class SecurityConfiguration {
     SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             ValidateAccessTokenUseCase validateAccessTokenUseCase,
-            CorsConfigurationSource corsConfigurationSource) throws Exception {
+            CorsConfigurationSource corsConfigurationSource,
+            @Value("${auth.internal-api-key:}") String internalApiKey) throws Exception {
         JwtAuthenticationFilter jwtAuthenticationFilter =
-                new JwtAuthenticationFilter(validateAccessTokenUseCase);
+                new JwtAuthenticationFilter(validateAccessTokenUseCase, internalApiKey);
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)

@@ -11,6 +11,7 @@ import com.nexo.ecommerce.orders.application.client.CatalogClient;
 import com.nexo.ecommerce.orders.application.client.dto.GetProduct;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
+import com.nexo.ecommerce.orders.application.client.dto.ReduceStockRequest;
 
 @FeignClient(name = "catalog-service")
 public interface CatalogFeignClient extends CatalogClient {
@@ -24,6 +25,6 @@ public interface CatalogFeignClient extends CatalogClient {
     
 
     @org.springframework.web.bind.annotation.PatchMapping("/catalog/{id}/stock")
-    Void reduceStock(@PathVariable("id") String id, @RequestBody Integer quantity);
+    Void reduceStock(@PathVariable("id") String id, @RequestBody ReduceStockRequest request);
 
 }

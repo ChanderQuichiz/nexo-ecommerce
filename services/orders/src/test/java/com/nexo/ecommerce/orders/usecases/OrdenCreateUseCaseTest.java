@@ -62,6 +62,6 @@ class OrdenCreateUseCaseTest {
         verify(eventPublisherPort).publishOrderCreatedEvent(eventCaptor.capture());
         assertEquals(response.message().substring(response.message().lastIndexOf(" ") + 1), eventCaptor.getValue().orderId());
         assertEquals("user-123", eventCaptor.getValue().customerId());
-        assertEquals("CREATED", eventCaptor.getValue().status());
+        assertEquals("PENDING", eventCaptor.getValue().status());
     }
 }

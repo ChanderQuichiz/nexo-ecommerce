@@ -1,10 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
+import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
 import { OrderService } from '../../core/order.service';
 import { Order } from '../../core/models';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-order-history',
@@ -27,6 +29,12 @@ import { Order } from '../../core/models';
           Seguir Comprando
         </a>
       </div>
+
+      @if (successMessage()) {
+        <div class="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 shadow-sm">
+          <p class="text-sm font-semibold text-green-800">{{ successMessage() }}</p>
+        </div>
+      }
 
       @if (errorMessage()) {
         <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-xl shadow-sm">
@@ -202,7 +210,7 @@ import { Order } from '../../core/models';
         </div>
       }
 
-      <!-- Stripe Simulated Payment Modal -->
+      <!-- Stripe Payment Modal -->
       @if (paymentModalOpen() && orderToPay()) {
         <div class="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-fade-in">
           <div class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl overflow-hidden">
@@ -226,36 +234,16 @@ import { Order } from '../../core/models';
               <span class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-md font-bold">Stripe Elements</span>
             </div>
 
-            <form [formGroup]="paymentForm" class="space-y-4">
-              <div>
-                <label class="block text-xs font-bold uppercase text-gray-500 tracking-wider mb-1">Nombre en la tarjeta</label>
-                <input type="text" formControlName="cardName" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-medium" placeholder="Ej: Juan Pérez" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold uppercase text-gray-500 tracking-wider mb-1">Número de tarjeta</label>
-                <div class="relative">
-                  <input type="text" formControlName="cardNumber" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-mono" placeholder="4242 •••• •••• 4242" />
-                  <span class="absolute right-3 top-2.5 text-xs bg-gray-100 font-bold px-2 py-1 rounded text-gray-500">VISA</span>
-                </div>
-              </div>
-
-              <div class="grid grid-cols-2 gap-3">
-                <div>
-                  <label class="block text-xs font-bold uppercase text-gray-500 tracking-wider mb-1">Expiración</label>
-                  <input type="text" formControlName="cardExp" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-mono" placeholder="MM/AA" />
-                </div>
-                <div>
-                  <label class="block text-xs font-bold uppercase text-gray-500 tracking-wider mb-1">CVC / CWD</label>
-                  <input type="password" maxlength="4" formControlName="cardCvc" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none text-sm font-mono" placeholder="123" />
-                </div>
-              </div>
+            @if (errorMessage()) {
+              <p class="mb-4 text-sm text-red-600">{{ errorMessage() }}</p>
+            }
+            <div id="stripe-payment-element" class="min-h-20"></div>
 
               <div class="pt-4">
                 <button
                   type="button"
                   (click)="confirmPayment()"
-                  [disabled]="!paymentForm.valid || processing()"
+                  [disabled]="processing() || !paymentElementReady()"
                   class="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold hover:bg-green-700 transition-all disabled:opacity-50 text-sm shadow-lg shadow-green-100 flex items-center justify-center gap-2"
                 >
                   @if (processing()) {
@@ -266,7 +254,6 @@ import { Order } from '../../core/models';
                   }
                 </button>
               </div>
-            </form>
           </div>
         </div>
       }
@@ -288,27 +275,28 @@ export class OrderHistoryComponent implements OnInit {
   orders = signal<Order[]>([]);
   selectedOrder = signal<Order | null>(null);
   
-  // Payment Modal State
+  errorMessage = signal('');
+  successMessage = signal('');
   paymentModalOpen = signal(false);
   orderToPay = signal<Order | null>(null);
   processing = signal(false);
-  errorMessage = signal('');
+  paymentElementReady = signal(false);
 
-  paymentForm: FormGroup;
+  private stripe: Stripe | null = null;
+  private elements: StripeElements | null = null;
+  private paymentElement: StripePaymentElement | null = null;
 
   constructor(
+    private route: ActivatedRoute,
     private orderService: OrderService,
-    private fb: FormBuilder,
+    private router: Router,
   ) {
-    this.paymentForm = this.fb.group({
-      cardName: ['Juan Pérez', Validators.required],
-      cardNumber: ['4242 4242 4242 4242', [Validators.required, Validators.minLength(15)]],
-      cardExp: ['12/28', [Validators.required, Validators.pattern('^(0[1-9]|1[0-2])\\/([0-9]{2})$')]],
-      cardCvc: ['123', [Validators.required, Validators.minLength(3)]],
-    });
   }
 
   ngOnInit(): void {
+    if (this.route.snapshot.queryParamMap.get('payment') === 'success') {
+      this.successMessage.set('Pago realizado con éxito. Tu pedido ya fue confirmado.');
+    }
     this.loadOrders();
   }
 
@@ -343,40 +331,28 @@ export class OrderHistoryComponent implements OnInit {
   }
 
   openPaymentModal(order: Order): void {
-    this.orderToPay.set(order);
-    this.paymentModalOpen.set(true);
-    this.errorMessage.set('');
+    void this.router.navigate(['/payment', order.id]);
   }
 
   closePaymentModal(): void {
     this.paymentModalOpen.set(false);
     this.orderToPay.set(null);
     this.processing.set(false);
+    this.paymentElementReady.set(false);
+    this.paymentElement?.unmount();
+    this.paymentElement = null;
+    this.elements = null;
   }
 
   async confirmPayment(): Promise<void> {
-    const order = this.orderToPay();
-    if (!order || !this.paymentForm.valid) return;
-
+    if (!this.stripe || !this.elements) return;
     this.processing.set(true);
-    this.errorMessage.set('');
-
-    try {
-      // 1. Crear Intent de Pago simulado (/orders/intent-payment)
-      const intentRes = await firstValueFrom(
-        this.orderService.createIntentPayment(order.id)
-      );
-
-      // 2. Simular webhook de pago exitoso de Stripe (/webhooks/stripe -> PAID)
-      await firstValueFrom(
-        this.orderService.simulateStripeWebhook(intentRes.intentId, 'PAID')
-      );
-
-      // Recargar lista y cerrar modal
-      this.loadOrders();
-      this.closePaymentModal();
-    } catch (err: any) {
-      this.errorMessage.set('Error al procesar el pago con Stripe.');
+    const result = await this.stripe.confirmPayment({
+      elements: this.elements,
+      redirect: 'if_required',
+    });
+    if (result.error) {
+      this.errorMessage.set(result.error.message ?? 'No se pudo procesar el pago.');
       this.processing.set(false);
     }
   }

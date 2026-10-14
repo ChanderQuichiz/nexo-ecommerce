@@ -98,29 +98,37 @@ export class AdminOrdersComponent {
   }
 
   updateStatus(orderId: string, newStatus: OrderStatus) {
-    this.orderService.updateOrderStatus(orderId, newStatus).subscribe(() => {
-      this.loadOrders();
-      // Update selected order in drawer if open
-      const updatedOrder = this.orders().find(o => o.id === orderId);
-      if (updatedOrder) {
-        this.selectedOrder.set(updatedOrder);
-      }
+    this.orderService.updateOrderStatus(orderId, newStatus).subscribe({
+      next: () => {
+        this.orderService.getAllOrders().subscribe({
+          next: orders => {
+            this.orders.set(orders);
+            const updatedOrder = orders.find(order => order.id === orderId);
+            if (updatedOrder) this.selectedOrder.set(updatedOrder);
+          },
+          error: () => this.selectedOrder.set(null),
+        });
+      },
+      error: () => {
+        this.selectedOrder.set(null);
+        window.alert('No se pudo actualizar el estado del pedido.');
+      },
     });
   }
 
   getStatusClass(status: string): string {
-    switch (status) {
-      case 'pending':
+    switch (status?.toUpperCase()) {
+      case 'PENDING':
         return 'bg-amber-100 text-amber-700';
-      case 'Pagado':
+      case 'PAID':
         return 'bg-blue-100 text-blue-700';
-      case 'En preparación':
+      case 'CREATED':
         return 'bg-indigo-100 text-indigo-700';
-      case 'Enviado':
+      case 'SHIPPED':
         return 'bg-purple-100 text-purple-700';
-      case 'Entregado':
+      case 'DELIVERED':
         return 'bg-green-100 text-green-700';
-      case 'cancelled':
+      case 'CANCELED':
         return 'bg-red-100 text-red-700';
       default:
         return 'bg-slate-100 text-slate-700';
