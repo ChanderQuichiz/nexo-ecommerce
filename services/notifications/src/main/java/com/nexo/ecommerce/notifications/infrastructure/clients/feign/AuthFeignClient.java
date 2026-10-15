@@ -9,7 +9,6 @@ import java.util.UUID;
 
 @FeignClient(
         name = "auth-service",
-        url = "${clients.auth.url:}",
         configuration = AuthFeignConfig.class)
 public interface AuthFeignClient {
 

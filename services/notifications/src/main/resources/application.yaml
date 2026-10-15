@@ -1,65 +1,60 @@
 spring:
-  config:
-    import: optional:file:.env[.properties]
   application:
     name: notifications-service
   rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
+    host: ${NOTIFICATIONS_RABBITMQ_HOST:rabbitmq}
+    port: ${NOTIFICATIONS_RABBITMQ_PORT:5672}
+    username: ${NOTIFICATIONS_RABBITMQ_USERNAME:guest}
+    password: ${NOTIFICATIONS_RABBITMQ_PASSWORD:guest}
     listener:
       simple:
         retry:
           enabled: true
-          max-attempts: ${RABBITMQ_RETRY_MAX_ATTEMPTS:3}
-          initial-interval: ${RABBITMQ_RETRY_INITIAL_INTERVAL:1000ms}
-          multiplier: ${RABBITMQ_RETRY_MULTIPLIER:2}
-          max-interval: ${RABBITMQ_RETRY_MAX_INTERVAL:5000ms}
+          max-attempts: 3
+          initial-interval: 1000ms
+          multiplier: 2
+          max-interval: 5000ms
         default-requeue-rejected: false
   mail:
-    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
-    port: ${MAIL_PORT:2525}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    host: ${NOTIFICATIONS_MAIL_HOST:smtp.gmail.com}
+    port: ${NOTIFICATIONS_MAIL_PORT:587}
+    username: ${NOTIFICATIONS_MAIL_USERNAME:chanderquichiz@gmail.com}
+    password: ${NOTIFICATIONS_MAIL_PASSWORD:rqtjrspnxxrfzfww}
     properties:
       mail:
         smtp:
-          auth: ${MAIL_SMTP_AUTH:true}
+          auth: true
           starttls:
-            enable: ${MAIL_STARTTLS_ENABLED:true}
+            enable: true
     test-connection: false
 
 server:
-  port: ${SERVER_PORT:8083}
+  port: 8083
 
 clients:
-  orders:
-    url: ${ORDERS_SERVICE_URL:}
   auth:
-    url: ${AUTH_SERVICE_URL:}
-    internal-api-key: ${INTERNAL_API_KEY:}
+    internal-api-key: ${NOTIFICATIONS_INTERNAL_API_KEY:local-nexo-internal-key}
 
 eureka:
   client:
     service-url:
-      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
-    enabled: ${EUREKA_CLIENT_ENABLED:true}
+      defaultZone: ${NOTIFICATIONS_EUREKA_SERVER_URL:http://discovery:8761/eureka/}
+    enabled: true
 
 messaging:
   orders:
-    exchange: ${ORDERS_EXCHANGE:orders.exchange}
-    queue: ${ORDERS_NOTIFICATIONS_QUEUE:notifications.queue}
+    exchange: orders.exchange
+    queue: notifications.queue
     routing-keys:
-      created: ${ORDERS_CREATED_ROUTING_KEY:orders.created}
-      updated: ${ORDERS_UPDATED_ROUTING_KEY:orders.updated}
-      paid: ${ORDERS_PAID_ROUTING_KEY:orders.paid}
+      created: orders.created
+      updated: orders.updated
+      paid: orders.paid
 
 notifications:
   mail:
-    from: ${MAIL_FROM:no-reply@nexo-ecommerce.com}
+    from: ${NOTIFICATIONS_MAIL_FROM:no-reply@nexo-ecommerce.com}
   receipt:
-    currency: ${RECEIPT_CURRENCY:PEN}
+    currency: PEN
 
 management:
   endpoints:

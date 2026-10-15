@@ -5,7 +5,7 @@ const required = process.argv.includes('--required');
 const envFile = process.argv.find((argument) => argument.startsWith('--env='))?.slice(6);
 
 if (envFile) {
-  const envPath = resolve('..', envFile);
+  const envPath = resolve(envFile);
   const contents = await readFile(envPath, 'utf8');
 
   for (const line of contents.split(/\r?\n/)) {

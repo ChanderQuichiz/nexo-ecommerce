@@ -1,25 +1,13 @@
 services:
   discovery:
     build: ./services/discovery
-    environment:
-      DISCOVERY_BIND_ADDRESS: ${DISCOVERY_BIND_ADDRESS:-0.0.0.0}
-      DISCOVERY_PORT: ${DISCOVERY_PORT:-8761}
     ports:
       - "127.0.0.1:8761:8761"
 
   gateway:
     build: ./services/gateway
-    environment:
-      GATEWAY_BIND_ADDRESS: ${GATEWAY_BIND_ADDRESS:-0.0.0.0}
-      GATEWAY_PORT: ${GATEWAY_PORT:-8082}
-      GATEWAY_CORS_ALLOWED_ORIGINS: ${GATEWAY_CORS_ALLOWED_ORIGINS:?Set GATEWAY_CORS_ALLOWED_ORIGINS in .env}
-      EUREKA_URL: ${EUREKA_URL:-http://discovery:8761/eureka/}
-      AUTH_ROUTE_URI: ${AUTH_ROUTE_URI:-lb://AUTH-SERVICE}
-      ORDERS_ROUTE_URI: ${ORDERS_ROUTE_URI:-lb://ORDERS-SERVICE}
-      CATALOG_ROUTE_URI: ${CATALOG_ROUTE_URI:-lb://CATALOG-SERVICE}
-      NOTIFICATIONS_ROUTE_URI: ${NOTIFICATIONS_ROUTE_URI:-lb://NOTIFICATIONS-SERVICE}
     ports:
-      - "${GATEWAY_HOST_BIND:-127.0.0.1}:${GATEWAY_PORT:-8082}:${GATEWAY_PORT:-8082}"
+      - "127.0.0.1:8082:8082"
     depends_on:
       - discovery
       - auth
@@ -29,23 +17,6 @@ services:
 
   auth:
     build: ./services/auth
-    environment:
-      SERVER_PORT: ${AUTH_SERVER_PORT:-8084}
-      EUREKA_URL: ${EUREKA_URL:-http://discovery:8761/eureka/}
-      DATABASE_URL: ${AUTH_DATABASE_URL:-jdbc:postgresql://auth-postgres:5432/auth_db}
-      DATABASE_USERNAME: ${AUTH_DATABASE_USERNAME:-auth}
-      DATABASE_PASSWORD: ${AUTH_DATABASE_PASSWORD:-auth}
-      REDIS_HOST: ${REDIS_HOST:-auth-redis}
-      REDIS_PORT: ${REDIS_PORT:-6379}
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-local-nexo-internal-key}
-      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
-      JWT_EXPIRATION: ${JWT_EXPIRATION:-15m}
-      JWT_ISSUER: ${JWT_ISSUER:-nexo-ecommerce}
-      AUTH_CORS_ALLOWED_ORIGINS: ${AUTH_CORS_ALLOWED_ORIGINS:?Set AUTH_CORS_ALLOWED_ORIGINS in .env}
-      AUTH_ADMIN_NAME: ${AUTH_ADMIN_NAME:-Administrador}
-      AUTH_ADMIN_EMAIL: ${AUTH_ADMIN_EMAIL:?Set AUTH_ADMIN_EMAIL in .env}
-      AUTH_ADMIN_PASSWORD: ${AUTH_ADMIN_PASSWORD:?Set AUTH_ADMIN_PASSWORD in .env}
     depends_on:
       discovery:
         condition: service_started
@@ -56,18 +27,6 @@ services:
 
   orders:
     build: ./services/orders
-    environment:
-      EUREKA_URL: ${EUREKA_URL:-http://discovery:8761/eureka/}
-      DATABASE_URL: ${ORDERS_DATABASE_URL:-jdbc:postgresql://orders-postgres:5432/orders_db}
-      DATABASE_USERNAME: ${ORDERS_DATABASE_USERNAME:-postgres}
-      DATABASE_PASSWORD: ${ORDERS_DATABASE_PASSWORD:-postgres}
-      RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
-      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
-      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-nexo}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-nexo}
-      CURRENCY: ${CURRENCY:-PEN}
-      STRIPE_API_KEY: ${STRIPE_API_KEY:?Set STRIPE_API_KEY in .env}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:?Set STRIPE_WEBHOOK_SECRET in .env}
     depends_on:
       discovery:
         condition: service_started
@@ -80,17 +39,6 @@ services:
 
   catalog:
     build: ./services/catalog
-    environment:
-      EUREKA_SERVER_URL: ${EUREKA_URL:-http://discovery:8761/eureka/}
-      DATABASE_URL: ${CATALOG_DATABASE_URL:-jdbc:postgresql://catalog-postgres:5432/catalog_db}
-      DATABASE_USERNAME: ${CATALOG_DATABASE_USERNAME:-postgres}
-      DATABASE_PASSWORD: ${CATALOG_DATABASE_PASSWORD:-postgres}
-      SERVER_PORT: ${CATALOG_SERVER_PORT:-8081}
-      AWS_REGION: ${AWS_REGION:?Set AWS_REGION in .env}
-      AWS_S3_BUCKET: ${AWS_S3_BUCKET:?Set AWS_S3_BUCKET in .env}
-      CDN_URL: ${CDN_URL:?Set CDN_URL in .env}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:?Set AWS_ACCESS_KEY_ID in .env}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:?Set AWS_SECRET_ACCESS_KEY in .env}
     depends_on:
       discovery:
         condition: service_started
@@ -99,29 +47,6 @@ services:
 
   notifications:
     build: ./services/notifications
-    environment:
-      SERVER_PORT: ${NOTIFICATIONS_SERVER_PORT:-8083}
-      EUREKA_SERVER_URL: ${EUREKA_URL:-http://discovery:8761/eureka/}
-      EUREKA_CLIENT_ENABLED: ${EUREKA_CLIENT_ENABLED:-true}
-      RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
-      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
-      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-nexo}
-      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-nexo}
-      ORDERS_SERVICE_URL: ${ORDERS_SERVICE_URL:-http://orders:8080}
-      AUTH_SERVICE_URL: ${AUTH_SERVICE_URL:-http://auth:8084}
-      INTERNAL_API_KEY: ${INTERNAL_API_KEY:-local-nexo-internal-key}
-      RECEIPT_CURRENCY: ${CURRENCY:-PEN}
-      RABBITMQ_RETRY_MAX_ATTEMPTS: ${RABBITMQ_RETRY_MAX_ATTEMPTS:-3}
-      RABBITMQ_RETRY_INITIAL_INTERVAL: ${RABBITMQ_RETRY_INITIAL_INTERVAL:-1000ms}
-      RABBITMQ_RETRY_MULTIPLIER: ${RABBITMQ_RETRY_MULTIPLIER:-2}
-      RABBITMQ_RETRY_MAX_INTERVAL: ${RABBITMQ_RETRY_MAX_INTERVAL:-5000ms}
-      MAIL_HOST: ${MAIL_HOST:-sandbox.smtp.mailtrap.io}
-      MAIL_PORT: ${MAIL_PORT:-2525}
-      MAIL_USERNAME: ${MAIL_USERNAME:-}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
-      MAIL_SMTP_AUTH: ${MAIL_SMTP_AUTH:-true}
-      MAIL_STARTTLS_ENABLED: ${MAIL_STARTTLS_ENABLED:-true}
-      MAIL_FROM: ${MAIL_FROM:-no-reply@nexo-ecommerce.com}
     depends_on:
       discovery:
         condition: service_started
@@ -131,13 +56,13 @@ services:
   auth-postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB: ${AUTH_POSTGRES_DB:-auth_db}
-      POSTGRES_USER: ${AUTH_POSTGRES_USER:-auth}
-      POSTGRES_PASSWORD: ${AUTH_POSTGRES_PASSWORD:-auth}
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: auth
     volumes:
       - auth-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ["CMD", "pg_isready", "-U", "auth", "-d", "auth_db"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -145,13 +70,13 @@ services:
   orders-postgres:
     image: postgres:13
     environment:
-      POSTGRES_DB: ${ORDERS_POSTGRES_DB:-orders_db}
-      POSTGRES_USER: ${ORDERS_POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${ORDERS_POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
       - orders-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -159,13 +84,13 @@ services:
   catalog-postgres:
     image: postgres:13
     environment:
-      POSTGRES_DB: ${CATALOG_POSTGRES_DB:-catalog_db}
-      POSTGRES_USER: ${CATALOG_POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${CATALOG_POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     volumes:
       - catalog-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -180,11 +105,9 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-nexo}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-nexo}
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq
+      - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     ports:
       - "127.0.0.1:15672:15672"
     healthcheck:

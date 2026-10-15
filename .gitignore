@@ -1,7 +1,11 @@
 .idea/
 .vscode/
+.DS_Store
 .env
 .env.*
 !.env.example
-/services/discovery/target/
-/services/gateway/target/
+target/
+**/target/
+*.jar
+*.class
+*.iml

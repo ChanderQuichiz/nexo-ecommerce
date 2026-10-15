@@ -1,6 +1,6 @@
 server:
-  address: ${GATEWAY_BIND_ADDRESS:127.0.0.1}
-  port: ${GATEWAY_PORT:8082}
+  address: 0.0.0.0
+  port: 8082
 
 spring:
   application:
@@ -24,31 +24,31 @@ spring:
               - Content-Type
       routes:
         - id: auth-service
-          uri: ${AUTH_ROUTE_URI:lb://AUTH-SERVICE}
+          uri: lb://AUTH-SERVICE
           predicates:
             - Path=/api/auth/**
           filters:
             - StripPrefix=1
         - id: orders-service
-          uri: ${ORDERS_ROUTE_URI:lb://ORDERS-SERVICE}
+          uri: lb://ORDERS-SERVICE
           predicates:
             - Path=/api/orders/**
           filters:
             - StripPrefix=1
         - id: catalog-service
-          uri: ${CATALOG_ROUTE_URI:lb://CATALOG-SERVICE}
+          uri: lb://CATALOG-SERVICE
           predicates:
             - Path=/api/catalog/**
           filters:
             - StripPrefix=1
         - id: notifications-service
-          uri: ${NOTIFICATIONS_ROUTE_URI:lb://NOTIFICATIONS-SERVICE}
+          uri: lb://NOTIFICATIONS-SERVICE
           predicates:
             - Path=/api/notifications/**
           filters:
             - StripPrefix=1
         - id: stripe-webhook
-          uri: ${ORDERS_ROUTE_URI:lb://ORDERS-SERVICE}
+          uri: lb://ORDERS-SERVICE
           predicates:
             - Path=/api/webhooks/stripe
           filters:
@@ -57,7 +57,7 @@ spring:
 eureka:
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+      defaultZone: ${GATEWAY_EUREKA_URL:http://discovery:8761/eureka/}
   instance:
     prefer-ip-address: true
 
