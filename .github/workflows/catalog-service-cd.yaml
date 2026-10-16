@@ -8,6 +8,7 @@ on:
 jobs:
   catalog-service:
     uses: ./.github/workflows/reusable-java-cd.yaml
+    secrets: inherit
     with:
       service-dir: services/catalog
       ecr-repo: nexo/catalog-service

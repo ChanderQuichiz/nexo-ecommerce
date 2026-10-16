@@ -8,6 +8,7 @@ on:
 jobs:
   gateway-service:
     uses: ./.github/workflows/reusable-java-cd.yaml
+    secrets: inherit
     with:
       service-dir: services/gateway
       ecr-repo: nexo/gateway

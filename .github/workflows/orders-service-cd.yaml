@@ -8,6 +8,7 @@ on:
 jobs:
   orders-service:
     uses: ./.github/workflows/reusable-java-cd.yaml
+    secrets: inherit
     with:
       service-dir: services/orders
       ecr-repo: nexo/orders-service
