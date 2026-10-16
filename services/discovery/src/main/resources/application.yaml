@@ -10,8 +10,8 @@ eureka:
   client:
     register-with-eureka: false
     fetch-registry: false
-  instance:
-    hostname: localhost
+  ##instance:     (ACTIVAS ESTO SI ES DEV LOCAL)
+    ##hostname: localhost
 
 management:
   endpoints:
