@@ -3,11 +3,11 @@ on:
   push:
     branches: [main]
     paths:
-      - services/notifications
+      - services/notifications/**
   workflow_dispatch:
 jobs:
-  auth-service:
-    uses: ./.github/workflows/reusable-java-cd.yml
+  notifications-service:
+    uses: ./.github/workflows/reusable-java-cd.yaml
     with:
       service-dir: services/notifications
       ecr-repo: nexo/notifications
