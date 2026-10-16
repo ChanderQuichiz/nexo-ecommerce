@@ -3,11 +3,11 @@ on:
   push:
     branches: [main]
     paths:
-      - services/orders
+      - services/orders/**
   workflow_dispatch:
 jobs:
-  auth-service:
-    uses: ./.github/workflows/reusable-java-cd.yml
+  orders-service:
+    uses: ./.github/workflows/reusable-java-cd.yaml
     with:
       service-dir: services/orders
       ecr-repo: nexo/orders-service
