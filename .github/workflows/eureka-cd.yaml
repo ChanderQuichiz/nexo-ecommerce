@@ -8,6 +8,7 @@ on:
 jobs:
   eureka-service:
     uses: ./.github/workflows/reusable-java-cd.yaml
+    secrets: inherit
     with:
       service-dir: services/discovery
       ecr-repo: nexo/discovery
