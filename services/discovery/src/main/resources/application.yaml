@@ -1,5 +1,5 @@
 server:
-  address: ${DISCOVERY_BIND_ADDRESS:127.0.0.1}
+  address: 0.0.0.0
   port: ${DISCOVERY_PORT:8761}
 
 spring:
@@ -11,7 +11,7 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
   instance:
-    hostname: localhost
+    hostname: ${HOSTNAME:localhost}
 
 management:
   endpoints:
