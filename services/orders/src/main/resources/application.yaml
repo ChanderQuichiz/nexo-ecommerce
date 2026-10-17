@@ -1,3 +1,7 @@
+server:
+  address: 0.0.0.0
+  port: ${SERVER_PORT:8080}
+
 spring:
   application:
     name: orders-service
@@ -50,4 +54,5 @@ eureka:
     serviceUrl:
       defaultZone: ${ORDERS_EUREKA_URL:http://discovery:8761/eureka/}
   instance:
-    prefer-ip-address: false
+    prefer-ip-address: true
+    hostname: ${HOSTNAME:localhost}

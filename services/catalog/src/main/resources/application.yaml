@@ -24,7 +24,8 @@ spring:
       max-request-size: 6MB
 
 server:
-  port: 8081
+  address: 0.0.0.0
+  port: ${SERVER_PORT:8081}
 
 management:
   endpoints:
@@ -51,5 +52,6 @@ eureka:
     service-url:
       defaultZone: ${CATALOG_EUREKA_SERVER_URL:http://discovery:8761/eureka/}
   instance:
-    prefer-ip-address: false
+    prefer-ip-address: true
+    hostname: ${HOSTNAME:localhost}
     instance-id: ${spring.application.name}:${server.port}
