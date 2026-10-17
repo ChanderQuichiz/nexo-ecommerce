@@ -50,4 +50,4 @@ eureka:
     serviceUrl:
       defaultZone: ${ORDERS_EUREKA_URL:http://discovery:8761/eureka/}
   instance:
-    prefer-ip-address: false
+    prefer-ip-address: true
