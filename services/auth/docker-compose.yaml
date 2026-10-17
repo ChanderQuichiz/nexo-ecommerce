@@ -3,15 +3,15 @@ services:
     image: postgres:16-alpine
     container_name: nexo-auth-postgres
     environment:
-      POSTGRES_DB: auth_db
-      POSTGRES_USER: auth
-      POSTGRES_PASSWORD: auth
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5433:5432"
     volumes:
       - auth-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U auth -d auth_db"]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
       interval: 5s
       timeout: 3s
       retries: 10

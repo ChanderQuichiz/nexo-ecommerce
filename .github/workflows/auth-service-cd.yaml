@@ -1,0 +1,14 @@
+name: auth-service CD Workflow
+on:
+  push:
+    branches: [main]
+    paths:
+      - services/auth/**
+  workflow_dispatch:
+jobs:
+  auth-service:
+    uses: ./.github/workflows/reusable-java-cd.yaml
+    secrets: inherit
+    with:
+      service-dir: services/auth
+      ecr-repo: nexo/auth-service

@@ -1,0 +1,14 @@
+name: notifications-service CD Workflow
+on:
+  push:
+    branches: [main]
+    paths:
+      - services/notifications/**
+  workflow_dispatch:
+jobs:
+  notifications-service:
+    uses: ./.github/workflows/reusable-java-cd.yaml
+    secrets: inherit
+    with:
+      service-dir: services/notifications
+      ecr-repo: nexo/notifications

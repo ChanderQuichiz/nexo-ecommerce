@@ -49,4 +49,9 @@ public interface ProductRepositoryJpa
             @Param("search") String search,
             @Param("category") String category
     );
+
+    boolean existsByNameIgnoreCaseAndIdNot(
+            String name,
+            String productId
+    );
 }

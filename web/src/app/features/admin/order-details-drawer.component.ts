@@ -22,12 +22,9 @@ import { Order, OrderStatus } from '../../core/models';
               [(ngModel)]="bufferedStatus"
               class="bg-white border border-slate-300 text-slate-700 text-sm rounded-lg w-full p-2.5"
             >
-              <option value="pending">Pendiente</option>
-              <option value="Pagado">Pagado</option>
-              <option value="En preparación">En preparación</option>
-              <option value="Enviado">Enviado</option>
-              <option value="Entregado">Entregado</option>
-              <option value="cancelled">Cancelado</option>
+              <option value="SHIPPED">Enviado</option>
+              <option value="DELIVERED">Entregado</option>
+              <option value="CANCELED">Cancelado</option>
             </select>
             
             @if (bufferedStatus !== order.status) {

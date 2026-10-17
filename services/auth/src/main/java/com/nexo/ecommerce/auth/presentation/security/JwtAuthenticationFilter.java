@@ -20,9 +20,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final ValidateAccessTokenUseCase validateAccessTokenUseCase;
+    private final String internalApiKey;
 
-    public JwtAuthenticationFilter(ValidateAccessTokenUseCase validateAccessTokenUseCase) {
+    public JwtAuthenticationFilter(
+            ValidateAccessTokenUseCase validateAccessTokenUseCase,
+            String internalApiKey) {
         this.validateAccessTokenUseCase = validateAccessTokenUseCase;
+        this.internalApiKey = internalApiKey;
     }
 
     @Override
@@ -39,6 +43,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (isValidInternalRequest(request)) {
+            var authentication = new UsernamePasswordAuthenticationToken(
+                    "internal-service",
+                    null,
+                    List.of(new SimpleGrantedAuthority("ROLE_INTERNAL")));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+            return;
+        }
         if (authorization != null && authorization.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
             String token = authorization.substring(BEARER_PREFIX.length()).trim();
             try {
@@ -58,5 +71,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isValidInternalRequest(HttpServletRequest request) {
+        return request.getServletPath().startsWith("/auth/users/")
+                && internalApiKey != null
+                && !internalApiKey.isBlank()
+                && internalApiKey.equals(request.getHeader("X-Internal-Api-Key"));
     }
 }

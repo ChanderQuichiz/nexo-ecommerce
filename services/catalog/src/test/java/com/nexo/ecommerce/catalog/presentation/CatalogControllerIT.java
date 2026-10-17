@@ -187,7 +187,11 @@ class CatalogControllerIT {
                                 .contentType(
                                         MediaType.APPLICATION_JSON
                                 )
-                                .content("2")
+                                .content("""
+                                        {
+                                        "quantity": 2
+                                        }
+                                """)
                 )
                 .andExpect(status().isOk());
 
@@ -262,5 +266,153 @@ class CatalogControllerIT {
                         .value("Tecnología"))
                 .andExpect(jsonPath("$.active")
                         .value(true));
+    }
+
+    @Test
+    void shouldUpdateProductWithoutChangingImage()
+            throws Exception {
+
+        String productJson = """
+            {
+              "name": "Laptop Lenovo Actualizada",
+              "description": "Laptop con información actualizada",
+              "price": 2999.90,
+              "stock": 25,
+              "category": "Computadoras"
+            }
+            """;
+
+        MockMultipartFile productPart =
+                new MockMultipartFile(
+                        "product",
+                        "",
+                        MediaType.APPLICATION_JSON_VALUE,
+                        productJson.getBytes(
+                                StandardCharsets.UTF_8
+                        )
+                );
+
+        mockMvc.perform(
+                        multipart(
+                                "/catalog/{id}",
+                                productId
+                        )
+                                .file(productPart)
+                                .with(request -> {
+                                    request.setMethod("PUT");
+                                    return request;
+                                })
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id")
+                        .value(productId))
+                .andExpect(jsonPath("$.name")
+                        .value("Laptop Lenovo Actualizada"))
+                .andExpect(jsonPath("$.price")
+                        .value(2999.90))
+                .andExpect(jsonPath("$.stock")
+                        .value(25))
+                .andExpect(jsonPath("$.category")
+                        .value("Computadoras"))
+                .andExpect(jsonPath("$.imageUrl")
+                        .value(
+                                "https://cdn.test/laptop.jpg"
+                        ));
+    }
+
+    @Test
+    void shouldUpdateProductWithNewImage()
+            throws Exception {
+
+        when(imageStoragePort.upload(
+                any(byte[].class),
+                eq("image/png"),
+                eq("laptop-new.png")
+        )).thenReturn(
+                new ImageStoragePort.StoredImage(
+                        "uploads/products/laptop-new.png",
+                        "https://cdn.test/"
+                                + "uploads/products/laptop-new.png"
+                )
+        );
+
+        String productJson = """
+            {
+              "name": "Laptop Lenovo Nueva",
+              "description": "Laptop con imagen actualizada",
+              "price": 3199.90,
+              "stock": 12,
+              "category": "Tecnología"
+            }
+            """;
+
+        MockMultipartFile productPart =
+                new MockMultipartFile(
+                        "product",
+                        "",
+                        MediaType.APPLICATION_JSON_VALUE,
+                        productJson.getBytes(
+                                StandardCharsets.UTF_8
+                        )
+                );
+
+        MockMultipartFile imagePart =
+                new MockMultipartFile(
+                        "image",
+                        "laptop-new.png",
+                        "image/png",
+                        "new-image-content".getBytes(
+                                StandardCharsets.UTF_8
+                        )
+                );
+
+        mockMvc.perform(
+                        multipart(
+                                "/catalog/{id}",
+                                productId
+                        )
+                                .file(productPart)
+                                .file(imagePart)
+                                .with(request -> {
+                                    request.setMethod("PUT");
+                                    return request;
+                                })
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id")
+                        .value(productId))
+                .andExpect(jsonPath("$.name")
+                        .value("Laptop Lenovo Nueva"))
+                .andExpect(jsonPath("$.stock")
+                        .value(12))
+                .andExpect(jsonPath("$.imageUrl")
+                        .value(
+                                "https://cdn.test/"
+                                        + "uploads/products/"
+                                        + "laptop-new.png"
+                        ));
+    }
+
+    @Test
+    void shouldToggleProductActiveStatus()
+            throws Exception {
+
+        mockMvc.perform(
+                        patch(
+                                "/catalog/{id}/active",
+                                productId
+                        )
+                )
+                .andExpect(status().isNoContent());
+
+        mockMvc.perform(
+                        get(
+                                "/catalog/{id}",
+                                productId
+                        )
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.active")
+                        .value(false));
     }
 }

@@ -16,6 +16,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.nexo.ecommerce.orders.BaseIntegrationTest;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
+import com.nexo.ecommerce.orders.application.ports.PaymentPort.PaymentIntentResult;
 import com.nexo.ecommerce.orders.application.usecases.dto.CreateIntentPaymentRequest;
 import com.nexo.ecommerce.orders.application.usecases.dto.OrdenCreateRequestDto;
 import com.nexo.ecommerce.orders.application.usecases.dto.OrderDto;
@@ -28,7 +29,8 @@ class StripeWebhookControllerIT extends BaseIntegrationTest {
     @BeforeEach
     void setUp() {
         when(catalogClient.validateStock(any())).thenReturn(new ValidateStockResponse(true, List.of()));
-        when(paymentPort.createPaymentIntent(any(), any(), any())).thenReturn("pi_webhook_test_123");
+        when(paymentPort.createPaymentIntent(any(), any(), any()))
+                .thenReturn(new PaymentIntentResult("pi_webhook_test_123", "cs_test_123"));
     }
 
     @Test

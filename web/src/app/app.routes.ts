@@ -59,6 +59,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/orders/order-history.component').then((m) => m.OrderHistoryComponent),
       },
+      {
+        path: 'payment/:orderId',
+        canActivate: [authGuard],
+        loadComponent: () =>
+          import('./features/orders/payment.component').then((m) => m.PaymentComponent),
+      },
     ],
   },
 

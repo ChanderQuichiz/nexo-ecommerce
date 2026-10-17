@@ -1,0 +1,14 @@
+name: Eureka CD Workflow
+on:
+  push:
+    branches: [main]
+    paths:
+      - services/discovery/**
+  workflow_dispatch:
+jobs:
+  eureka-service:
+    uses: ./.github/workflows/reusable-java-cd.yaml
+    secrets: inherit
+    with:
+      service-dir: services/discovery
+      ecr-repo: nexo/discovery

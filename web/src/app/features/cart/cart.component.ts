@@ -194,11 +194,11 @@ import { CartService } from '../../core/cart.service';
 export class CartComponent {
   constructor(public cartService: CartService) {}
 
-  updateQuantity(productId: number, quantity: number): void {
+  updateQuantity(productId: string, quantity: number): void {
     this.cartService.updateQuantity(productId, quantity);
   }
 
-  removeItem(productId: number): void {
+  removeItem(productId: string): void {
     this.cartService.removeFromCart(productId);
   }
 

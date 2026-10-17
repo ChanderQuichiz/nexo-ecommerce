@@ -12,6 +12,7 @@ import com.stripe.param.PaymentIntentCreateParams;
 import jakarta.annotation.PostConstruct;
 
 import com.nexo.ecommerce.orders.application.ports.PaymentPort;
+import com.nexo.ecommerce.orders.application.ports.PaymentPort.PaymentIntentResult;
 
 @Service
 public class StripeService implements PaymentPort {
@@ -29,7 +30,7 @@ public class StripeService implements PaymentPort {
 
 
     @Override
-    public String createPaymentIntent(String orderId, BigDecimal amount, String currency) {
+    public PaymentIntentResult createPaymentIntent(String orderId, BigDecimal amount, String currency) {
         try {
             long cents = amount.multiply(new BigDecimal("100")).longValue();
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
@@ -42,7 +43,7 @@ public class StripeService implements PaymentPort {
                     )
                     .build();
             PaymentIntent intent = PaymentIntent.create(params);
-            return intent.getId();
+            return new PaymentIntentResult(intent.getId(), intent.getClientSecret());
         } catch (StripeException e) {
             throw new RuntimeException("Error creating payment intent", e);
         }

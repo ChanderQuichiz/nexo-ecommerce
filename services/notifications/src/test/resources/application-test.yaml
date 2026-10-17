@@ -1,0 +1,19 @@
+eureka:
+  client:
+    enabled: false
+
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+  mail:
+    host: localhost
+    port: 2525
+    username: test-user
+    password: ""
+    test-connection: false
+
+notifications:
+  mail:
+    from: no-reply-test@nexo-ecommerce.com

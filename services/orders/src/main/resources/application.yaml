@@ -3,36 +3,33 @@ server:
   port: ${SERVER_PORT:8080}
 
 spring:
-    application:
-        name: orders-service
-    datasource:
-        url: ${DATABASE_URL}
-        username: ${DATABASE_USERNAME}
-        password: ${DATABASE_PASSWORD}
-
-    flyway:
-        enabled: true
-        baseline-on-migrate: true
-        validate-on-migrate: true
-        clean-disabled: true          # seguridad: nunca permitir borrar todo el esquema
-        locations: classpath:db/migration
-
-    jpa:
-        hibernate:
-            ddl-auto: validate          # Hibernate NO crea/modifica tablas, solo valida
-        show-sql: true
-
-    rabbitmq:
-      host: ${RABBITMQ_HOST:localhost}
-      port: ${RABBITMQ_PORT:5672}
-      username: ${RABBITMQ_USERNAME:guest}
-      password: ${RABBITMQ_PASSWORD:guest}
+  application:
+    name: orders-service
+  datasource:
+    url: ${ORDERS_DATABASE_URL:jdbc:postgresql://orders-postgres:5432/postgres}
+    username: ${ORDERS_DATABASE_USERNAME:postgres}
+    password: ${ORDERS_DATABASE_PASSWORD:postgres}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    validate-on-migrate: true
+    clean-disabled: true
+    locations: classpath:db/migration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  rabbitmq:
+    host: ${ORDERS_RABBITMQ_HOST:rabbitmq}
+    port: ${ORDERS_RABBITMQ_PORT:5672}
+    username: ${ORDERS_RABBITMQ_USERNAME:guest}
+    password: ${ORDERS_RABBITMQ_PASSWORD:guest}
 
 management:
   endpoints:
     web:
       exposure:
-        include: health, info
+        include: health,info
   endpoint:
     health:
       show-details: always
@@ -46,18 +43,16 @@ resilience4j:
         wait-duration-in-open-state: 10s
 
 constants:
-  interest-rate: ${INTEREST_RATE}
-  shipping-fee: ${SHIPPING_FEE}
-  currency: ${CURRENCY}
+  currency: PEN
 stripe:
-  api-key: ${STRIPE_API_KEY}
+  api-key: ${ORDERS_STRIPE_API_KEY:sk_test_replace_me}
   webhook:
-    secret: ${STRIPE_WEBHOOK_SECRET}
+    secret: ${ORDERS_STRIPE_WEBHOOK_SECRET:whsec_replace_me}
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
+      defaultZone: ${ORDERS_EUREKA_URL:http://discovery:8761/eureka/}
   instance:
     prefer-ip-address: true
     hostname: ${HOSTNAME:localhost}

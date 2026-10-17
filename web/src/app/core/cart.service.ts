@@ -32,12 +32,13 @@ export class CartService {
   }
 
   addToCart(product: Product, quantity: number = 1): boolean {
-    if (!this.productService.checkStock(product.id, quantity)) {
+    const existingItem = this.cartItems().find((item) => item.product.id === product.id);
+    const requestedQuantity = (existingItem?.quantity ?? 0) + quantity;
+    if (product.stock < requestedQuantity) {
       return false;
     }
 
     this.cartItems.update((items) => {
-      const existingItem = items.find((item) => item.product.id === product.id);
       if (existingItem) {
         return items.map((item) =>
           item.product.id === product.id ? { ...item, quantity: item.quantity + quantity } : item,
@@ -49,12 +50,12 @@ export class CartService {
     return true;
   }
 
-  removeFromCart(productId: number): void {
+  removeFromCart(productId: string): void {
     this.cartItems.update((items) => items.filter((item) => item.product.id !== productId));
     this.saveCart();
   }
 
-  updateQuantity(productId: number, quantity: number): boolean {
+  updateQuantity(productId: string, quantity: number): boolean {
     if (quantity <= 0) {
       this.removeFromCart(productId);
       return true;
@@ -63,7 +64,7 @@ export class CartService {
     const item = this.cartItems().find((i) => i.product.id === productId);
     if (!item) return false;
 
-    if (!this.productService.checkStock(productId, quantity)) {
+    if (item.product.stock < quantity) {
       return false;
     }
 
