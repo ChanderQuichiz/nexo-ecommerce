@@ -45,7 +45,7 @@ eureka:
     serviceUrl:
       defaultZone: ${AUTH_EUREKA_URL:http://discovery:8761/eureka/}
   instance:
-    prefer-ip-address: true
+    prefer-ip-address: false
 
 management:
   endpoints:
