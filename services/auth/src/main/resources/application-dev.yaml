@@ -19,10 +19,10 @@ auth:
   admin:
     name: Administrador
     email: admin@gmail.com
-    password: una-clave-segura
+    password: ${AUTH_ADMIN_PASSWORD:una-clave-segura}
   jwt:
-    secret: bG9jYWwtZGV2LWp3dC1zZWNyZXQta2V5LWZvci1uZXhvLWVjb21tZXJjZQ==
-  internal-api-key: local-nexo-internal-key
+    secret: ${AUTH_JWT_SECRET:bG9jYWwtZGV2LWp3dC1zZWNyZXQta2V5LWZvci1uZXhvLWVjb21tZXJjZQ==}
+  internal-api-key: ${AUTH_INTERNAL_API_KEY:local-nexo-internal-key}
 
 eureka:
   client:
