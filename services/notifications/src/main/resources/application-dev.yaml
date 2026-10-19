@@ -17,7 +17,7 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: chanderquichiz@gmail.com
-    password: ${NOTIFICATIONS_MAIL_PASSWORD:dummy_app_password}
+    password: ${NOTIFICATIONS_MAIL_PASSWORD:example_mail_password}
     properties:
       mail:
         smtp:
@@ -28,7 +28,7 @@ spring:
 
 clients:
   auth:
-    internal-api-key: ${NOTIFICATIONS_INTERNAL_API_KEY:local-nexo-internal-key}
+    internal-api-key: ${NOTIFICATIONS_INTERNAL_API_KEY:example_internal_api_key}
 
 notifications:
   mail:
