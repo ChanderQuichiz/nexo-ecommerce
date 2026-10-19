@@ -1,34 +1,34 @@
 spring:
   datasource:
-    url: ${AUTH_DATABASE_URL:jdbc:postgresql://auth-postgres:5432/auth_db}
-    username: ${AUTH_DATABASE_USERNAME:auth}
-    password: ${AUTH_DATABASE_PASSWORD:auth}
+    url: jdbc:postgresql://auth-postgres:5432/auth_db
+    username: auth
+    password: auth
   flyway:
-    user: ${AUTH_DATABASE_USERNAME:auth}
-    password: ${AUTH_DATABASE_PASSWORD:auth}
-    url: ${AUTH_DATABASE_URL:jdbc:postgresql://auth-postgres:5432/auth_db}
+    url: jdbc:postgresql://auth-postgres:5432/auth_db
+    user: auth
+    password: auth
   data:
     redis:
-      host: ${AUTH_REDIS_HOST:auth-redis}
-      port: ${AUTH_REDIS_PORT:6379}
-      password: ${AUTH_REDIS_PASSWORD:}
+      host: auth-redis
+      port: 6379
+      password: ""
 
 auth:
   cors:
-    allowed-origins: ${AUTH_CORS_ALLOWED_ORIGINS:http://localhost:4200,http://127.0.0.1:4200}
+    allowed-origins: http://localhost:4200,http://127.0.0.1:4200
   admin:
     name: Administrador
-    email: ${AUTH_ADMIN_EMAIL:admin@gmail.com}
-    password: ${AUTH_ADMIN_PASSWORD:12345678}
+    email: admin@gmail.com
+    password: una-clave-segura
   jwt:
-    secret: ${AUTH_JWT_SECRET:bG9jYWwtZGV2LWp3dC1zZWNyZXQta2V5LWZvci1uZXhvLWVjb21tZXJjZQ==}
-  internal-api-key: ${AUTH_INTERNAL_API_KEY:local-nexo-internal-key}
+    secret: bG9jYWwtZGV2LWp3dC1zZWNyZXQta2V5LWZvci1uZXhvLWVjb21tZXJjZQ==
+  internal-api-key: local-nexo-internal-key
 
 eureka:
   client:
     enabled: true
     serviceUrl:
-      defaultZone: ${AUTH_EUREKA_URL:http://discovery:8761/eureka/}
+      defaultZone: http://discovery:8761/eureka/
   instance:
     prefer-ip-address: true
     hostname: ${HOSTNAME:localhost}

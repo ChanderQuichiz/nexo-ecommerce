@@ -1,9 +1,9 @@
 spring:
   rabbitmq:
-    host: ${NOTIFICATIONS_RABBITMQ_HOST:rabbitmq}
-    port: ${NOTIFICATIONS_RABBITMQ_PORT:5672}
-    username: ${NOTIFICATIONS_RABBITMQ_USERNAME:guest}
-    password: ${NOTIFICATIONS_RABBITMQ_PASSWORD:guest}
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
     listener:
       simple:
         retry:
@@ -14,10 +14,10 @@ spring:
           max-interval: 5000ms
         default-requeue-rejected: false
   mail:
-    host: ${NOTIFICATIONS_MAIL_HOST:smtp.gmail.com}
-    port: ${NOTIFICATIONS_MAIL_PORT:587}
-    username: ${NOTIFICATIONS_MAIL_USERNAME:chanderquichiz@gmail.com}
-    password: ${NOTIFICATIONS_MAIL_PASSWORD:rqtjrspnxxrfzfww}
+    host: smtp.gmail.com
+    port: 587
+    username: chanderquichiz@gmail.com
+    password: rqtjrspnxxrfzfww
     properties:
       mail:
         smtp:
@@ -28,17 +28,17 @@ spring:
 
 clients:
   auth:
-    internal-api-key: ${NOTIFICATIONS_INTERNAL_API_KEY:local-nexo-internal-key}
+    internal-api-key: local-nexo-internal-key
 
 notifications:
   mail:
-    from: ${NOTIFICATIONS_MAIL_FROM:no-reply@nexo-ecommerce.com}
+    from: no-reply@nexo-ecommerce.com
 
 eureka:
   client:
     enabled: true
     service-url:
-      defaultZone: ${NOTIFICATIONS_EUREKA_SERVER_URL:http://discovery:8761/eureka/}
+      defaultZone: http://discovery:8761/eureka/
   instance:
     prefer-ip-address: true
     hostname: ${HOSTNAME:localhost}
