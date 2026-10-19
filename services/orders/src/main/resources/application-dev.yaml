@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: ${ORDERS_DATABASE_URL:jdbc:postgresql://orders-postgres:5432/postgres}
+    username: ${ORDERS_DATABASE_USERNAME:postgres}
+    password: ${ORDERS_DATABASE_PASSWORD:postgres}
+  rabbitmq:
+    host: ${ORDERS_RABBITMQ_HOST:rabbitmq}
+    port: ${ORDERS_RABBITMQ_PORT:5672}
+    username: ${ORDERS_RABBITMQ_USERNAME:guest}
+    password: ${ORDERS_RABBITMQ_PASSWORD:guest}
+
+stripe:
+  api-key: ${ORDERS_STRIPE_API_KEY:sk_test_replace_me}
+  webhook:
+    secret: ${ORDERS_STRIPE_WEBHOOK_SECRET:whsec_replace_me}
+
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: ${ORDERS_EUREKA_URL:http://discovery:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+    hostname: ${HOSTNAME:localhost}

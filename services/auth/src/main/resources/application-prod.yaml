@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: ${AUTH_DATABASE_URL}
+    username: ${AUTH_DATABASE_USERNAME}
+    password: ${AUTH_DATABASE_PASSWORD}
+  flyway:
+    user: ${AUTH_DATABASE_USERNAME}
+    password: ${AUTH_DATABASE_PASSWORD}
+    url: ${AUTH_DATABASE_URL}
+  data:
+    redis:
+      host: ${AUTH_REDIS_HOST}
+      port: ${AUTH_REDIS_PORT:6379}
+      password: ${AUTH_REDIS_PASSWORD}
+
+auth:
+  cors:
+    allowed-origins: ${AUTH_CORS_ALLOWED_ORIGINS}
+  admin:
+    name: ${AUTH_ADMIN_NAME:Administrador}
+    email: ${AUTH_ADMIN_EMAIL}
+    password: ${AUTH_ADMIN_PASSWORD}
+  jwt:
+    secret: ${AUTH_JWT_SECRET}
+  internal-api-key: ${AUTH_INTERNAL_API_KEY}
+
+eureka:
+  client:
+    enabled: false

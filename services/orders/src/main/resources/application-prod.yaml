@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: ${ORDERS_DATABASE_URL}
+    username: ${ORDERS_DATABASE_USERNAME}
+    password: ${ORDERS_DATABASE_PASSWORD}
+  rabbitmq:
+    host: ${ORDERS_RABBITMQ_HOST}
+    port: ${ORDERS_RABBITMQ_PORT:5672}
+    username: ${ORDERS_RABBITMQ_USERNAME}
+    password: ${ORDERS_RABBITMQ_PASSWORD}
+
+stripe:
+  api-key: ${ORDERS_STRIPE_API_KEY}
+  webhook:
+    secret: ${ORDERS_STRIPE_WEBHOOK_SECRET}
+
+eureka:
+  client:
+    enabled: false

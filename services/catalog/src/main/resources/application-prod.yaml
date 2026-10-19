@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: ${CATALOG_DATABASE_URL}
+    username: ${CATALOG_DATABASE_USERNAME}
+    password: ${CATALOG_DATABASE_PASSWORD}
+
+aws:
+  region: ${CATALOG_AWS_REGION}
+  access-key-id: ${CATALOG_AWS_ACCESS_KEY_ID}
+  secret-access-key: ${CATALOG_AWS_SECRET_ACCESS_KEY}
+  s3:
+    bucket: ${CATALOG_AWS_S3_BUCKET}
+    cdn-url: ${CATALOG_CDN_URL}
+
+eureka:
+  client:
+    enabled: false

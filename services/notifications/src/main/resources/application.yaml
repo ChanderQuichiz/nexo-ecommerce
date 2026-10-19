@@ -1,45 +1,11 @@
-spring:
-  application:
-    name: notifications-service
-  rabbitmq:
-    host: ${NOTIFICATIONS_RABBITMQ_HOST:rabbitmq}
-    port: ${NOTIFICATIONS_RABBITMQ_PORT:5672}
-    username: ${NOTIFICATIONS_RABBITMQ_USERNAME:guest}
-    password: ${NOTIFICATIONS_RABBITMQ_PASSWORD:guest}
-    listener:
-      simple:
-        retry:
-          enabled: true
-          max-attempts: 3
-          initial-interval: 1000ms
-          multiplier: 2
-          max-interval: 5000ms
-        default-requeue-rejected: false
-  mail:
-    host: ${NOTIFICATIONS_MAIL_HOST:smtp.gmail.com}
-    port: ${NOTIFICATIONS_MAIL_PORT:587}
-    username: ${NOTIFICATIONS_MAIL_USERNAME:chanderquichiz@gmail.com}
-    password: ${NOTIFICATIONS_MAIL_PASSWORD:rqtjrspnxxrfzfww}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-    test-connection: false
-
 server:
   port: 8083
 
-clients:
-  auth:
-    internal-api-key: ${NOTIFICATIONS_INTERNAL_API_KEY:local-nexo-internal-key}
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${NOTIFICATIONS_EUREKA_SERVER_URL:http://discovery:8761/eureka/}
-    enabled: true
+spring:
+  application:
+    name: notifications-service
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
 messaging:
   orders:
@@ -51,8 +17,6 @@ messaging:
       paid: orders.paid
 
 notifications:
-  mail:
-    from: ${NOTIFICATIONS_MAIL_FROM:no-reply@nexo-ecommerce.com}
   receipt:
     currency: PEN
 
