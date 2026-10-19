@@ -21,4 +21,4 @@ eureka:
       defaultZone: http://discovery:8761/eureka/
   instance:
     prefer-ip-address: true
-    hostname: ${HOSTNAME:localhost}
+    hostname: localhost
