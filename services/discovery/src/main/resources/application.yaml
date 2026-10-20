@@ -1,6 +1,6 @@
 server:
   address: 0.0.0.0
-  port: ${DISCOVERY_PORT:8761}
+  port: 8761
 
 spring:
   application:
@@ -11,11 +11,7 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
   instance:
-<<<<<<< HEAD
     hostname: localhost
-=======
-    hostname: ${HOSTNAME:localhost}
->>>>>>> origin/main
 
 management:
   endpoints:
