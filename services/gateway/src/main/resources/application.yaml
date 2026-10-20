@@ -1,6 +1,6 @@
 server:
   address: 0.0.0.0
-  port: 8082
+  port: ${GATEWAY_PORT:8082}
 
 spring:
   application:
@@ -60,7 +60,11 @@ eureka:
       defaultZone: http://discovery:8761/eureka/
   instance:
     prefer-ip-address: true
+<<<<<<< HEAD
     hostname: localhost
+=======
+    hostname: ${HOSTNAME:localhost}
+>>>>>>> origin/main
 
 management:
   endpoints:

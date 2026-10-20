@@ -1,5 +1,6 @@
 server:
-  port: 8084
+  address: 0.0.0.0
+  port: ${SERVER_PORT:8084}
 
 spring:
   application:
@@ -21,6 +22,18 @@ auth:
   jwt:
     expiration: 15m
     issuer: nexo-ecommerce
+<<<<<<< HEAD
+=======
+  internal-api-key: ${AUTH_INTERNAL_API_KEY:local-nexo-internal-key}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${AUTH_EUREKA_URL:http://discovery:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+    hostname: ${HOSTNAME:localhost}
+>>>>>>> origin/main
 
 management:
   endpoints:
