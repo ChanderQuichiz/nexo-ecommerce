@@ -1,3 +1,6 @@
 export const environment = {
-  production: false,
+  production: true,
+  apiUrl: '/api',
+  stripePublicKey: 'pk_live_sample',
+  shippingFee: 0,
 };

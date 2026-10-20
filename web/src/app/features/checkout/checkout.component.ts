@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { firstValueFrom } from 'rxjs';
 import { CartService } from '../../core/cart.service';
 import { OrderService } from '../../core/order.service';
-import { AppConfigService } from '../../core/app-config.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-checkout',
@@ -108,7 +108,7 @@ import { AppConfigService } from '../../core/app-config.service';
 export class CheckoutComponent implements OnInit {
   loading = signal(false);
   errorMessage = signal('');
-  shippingCost = 0;
+  shippingCost = environment.shippingFee;
 
   cartItems: any;
   subtotal: any;
@@ -120,10 +120,8 @@ export class CheckoutComponent implements OnInit {
     private fb: FormBuilder,
     private cartService: CartService,
     private orderService: OrderService,
-    private router: Router,
-    private configService: AppConfigService
+    private router: Router
   ) {
-    this.shippingCost = this.configService.shippingFee;
     this.cartItems = this.cartService.items;
     this.subtotal = this.cartService.totalPrice;
 

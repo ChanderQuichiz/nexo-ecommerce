@@ -51,7 +51,7 @@ describe('AuthService', () => {
     expect(logout.request.method).toBe('POST');
     expect(logout.request.headers.get('Authorization')).toBe('Bearer signed-token');
     logout.flush(null);
-    expect(service.isAuthenticated()).toBe(false);
+    expect(service.isAuthenticated()).false;
   });
 
   it('registers a client through the gateway', () => {

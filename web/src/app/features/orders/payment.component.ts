@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
 import { OrderService } from '../../core/order.service';
 import { Order } from '../../core/models';
-import { AppConfigService } from '../../core/app-config.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-payment',
@@ -97,8 +97,7 @@ export class PaymentComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private orderService: OrderService,
-    private configService: AppConfigService
+    private orderService: OrderService
   ) {}
 
   ngOnInit(): void {
@@ -183,7 +182,7 @@ export class PaymentComponent implements OnInit {
 
   private async initializePaymentElement(): Promise<void> {
     try {
-      this.stripe = await loadStripe(this.configService.stripePublicKey);
+      this.stripe = await loadStripe(environment.stripePublicKey);
       const order = this.order();
       if (!this.stripe || !order) throw new Error('Stripe no está disponible');
       const intentRes = await firstValueFrom(this.orderService.createIntentPayment(order.id));

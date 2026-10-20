@@ -1,10 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { CartItem, Order, OrderStatus } from './models';
 import { AuthService } from './auth.service';
 import { ProductService } from './product.service';
-import { AppConfigService } from './app-config.service';
 
 export interface OrdenCreateRequestDto {
   userId: string;
@@ -50,16 +50,13 @@ interface ApiOrder {
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
+  private readonly ordersUrl = `${environment.apiUrl}/orders`;
+
   constructor(
     private http: HttpClient,
     private productService: ProductService,
-    private authService: AuthService,
-    private configService: AppConfigService
+    private authService: AuthService
   ) {}
-
-  private get ordersUrl(): string {
-    return `${this.configService.apiUrl}/orders`;
-  }
 
   createOrder(
     items: CartItem[],
