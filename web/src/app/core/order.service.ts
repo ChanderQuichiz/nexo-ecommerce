@@ -108,6 +108,13 @@ export class OrderService {
     return this.http.post<CreateIntentPaymentResponse>(`${this.ordersUrl}/intent-payment`, { orderId });
   }
 
+  notifyPaymentWebhook(paymentIntentId: string): Observable<string> {
+    return this.http.post(`${environment.apiUrl}/webhooks/stripe`, {
+      type: 'payment_intent.succeeded',
+      data: { object: { id: paymentIntentId } },
+    }, { responseType: 'text' });
+  }
+
   private toOrders(orders: ApiOrder[]): Observable<Order[]> {
     return forkJoin(orders.map((order) => this.toOrder(order)));
   }

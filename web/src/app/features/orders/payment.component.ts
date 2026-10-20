@@ -136,6 +136,15 @@ export class PaymentComponent implements OnInit {
         return;
       }
       this.errorMessage.set('Pago confirmado. Verificando el estado de la orden...');
+
+      if (result.paymentIntent?.id) {
+        try {
+          await firstValueFrom(this.orderService.notifyPaymentWebhook(result.paymentIntent.id));
+        } catch {
+          // Si falla la notificación directa, el polling seguirá intentando
+        }
+      }
+
       this.processing.set(false);
       this.waitForPaidOrder();
     } catch {
