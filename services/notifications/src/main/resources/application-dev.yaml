@@ -16,7 +16,7 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: chanderquichiz@gmail.com
+    username: ${NOTIFICATIONS_MAIL_USERNAME}
     password: ${NOTIFICATIONS_MAIL_PASSWORD}
     properties:
       mail:
@@ -32,7 +32,7 @@ clients:
 
 notifications:
   mail:
-    from: no-reply@nexo-ecommerce.com
+    from: ${NOTIFICATIONS_MAIL_FROM}
 
 eureka:
   client:
