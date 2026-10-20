@@ -3,9 +3,9 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
-import { environment } from '../../../environments/environment';
 import { OrderService } from '../../core/order.service';
 import { Order } from '../../core/models';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-payment',
@@ -97,7 +97,7 @@ export class PaymentComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private orderService: OrderService,
+    private orderService: OrderService
   ) {}
 
   ngOnInit(): void {
@@ -108,7 +108,7 @@ export class PaymentComponent implements OnInit {
     }
 
     this.orderService.getOrderById(orderId).subscribe({
-      next: order => {
+      next: (order) => {
         if (order.status !== 'PENDING' && order.status !== 'pending') {
           this.errorMessage.set('Este pedido ya no está pendiente de pago.');
           return;
@@ -136,6 +136,15 @@ export class PaymentComponent implements OnInit {
         return;
       }
       this.errorMessage.set('Pago confirmado. Verificando el estado de la orden...');
+
+      if (result.paymentIntent?.id) {
+        try {
+          await firstValueFrom(this.orderService.notifyPaymentWebhook(result.paymentIntent.id));
+        } catch {
+          // Si falla la notificación directa, el polling seguirá intentando
+        }
+      }
+
       this.processing.set(false);
       this.waitForPaidOrder();
     } catch {
@@ -151,7 +160,7 @@ export class PaymentComponent implements OnInit {
     let attempts = 0;
     const checkStatus = () => {
       this.orderService.getOrderById(orderId).subscribe({
-        next: order => {
+        next: (order) => {
           this.order.set(order);
           if (order.status === 'PAID') {
             void this.router.navigate(['/orders'], {
@@ -164,7 +173,7 @@ export class PaymentComponent implements OnInit {
             return;
           }
           this.errorMessage.set(
-            'El pago fue confirmado, pero la orden todavía está esperando el webhook de Stripe.',
+            'El pago fue confirmado, pero la orden todavía está esperando el webhook de Stripe.'
           );
         },
         error: () => {
@@ -189,7 +198,7 @@ export class PaymentComponent implements OnInit {
       if (!intentRes.clientSecret) throw new Error('No se recibió el client secret de Stripe');
       this.elements = this.stripe.elements({ clientSecret: intentRes.clientSecret });
       this.paymentElement = this.elements.create('payment');
-      await new Promise<void>(resolve => setTimeout(resolve, 0));
+      await new Promise<void>((resolve) => setTimeout(resolve, 0));
       this.paymentElement.mount('#stripe-payment-element');
       this.paymentElementReady.set(true);
     } catch {

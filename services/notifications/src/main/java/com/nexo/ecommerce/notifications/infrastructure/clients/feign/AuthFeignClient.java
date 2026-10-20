@@ -9,7 +9,8 @@ import java.util.UUID;
 
 @FeignClient(
         name = "auth-service",
-        configuration = AuthFeignConfig.class)
+        configuration = AuthFeignConfig.class,
+        fallback = AuthFeignClientFallback.class)
 public interface AuthFeignClient {
 
     @GetMapping("/auth/users/{userId}")

@@ -33,13 +33,15 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
-      .pipe(tap(response => this.setSession(response)));
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
+      .pipe(tap((response) => this.setSession(response)));
   }
 
   register(name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { name, email, password })
-      .pipe(tap(response => this.setSession(response)));
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, { name, email, password })
+      .pipe(tap((response) => this.setSession(response)));
   }
 
   logout(): void {

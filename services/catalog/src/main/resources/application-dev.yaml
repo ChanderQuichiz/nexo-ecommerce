@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://catalog-postgres:5432/postgres
+    username: postgres
+    password: postgres
+
+aws:
+  region: us-east-2
+  access-key-id: ${CATALOG_AWS_ACCESS_KEY_ID}
+  secret-access-key: ${CATALOG_AWS_SECRET_ACCESS_KEY}
+  s3:
+    bucket: nexo-product-image-542495333597-us-east-2-an
+    cdn-url: http://du7zrfd5dtnkr.cloudfront.net
+
+eureka:
+  client:
+    enabled: true
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://discovery:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    hostname: localhost

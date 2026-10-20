@@ -3,11 +3,19 @@ services:
     build: ./services/discovery
     ports:
       - "127.0.0.1:8761:8761"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
 
   gateway:
     build: ./services/gateway
     ports:
       - "127.0.0.1:8082:8082"
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
     depends_on:
       - discovery
       - auth
@@ -17,6 +25,10 @@ services:
 
   auth:
     build: ./services/auth
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
     depends_on:
       discovery:
         condition: service_started
@@ -27,6 +39,10 @@ services:
 
   orders:
     build: ./services/orders
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
     depends_on:
       discovery:
         condition: service_started
@@ -39,6 +55,10 @@ services:
 
   catalog:
     build: ./services/catalog
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
     depends_on:
       discovery:
         condition: service_started
@@ -47,6 +67,10 @@ services:
 
   notifications:
     build: ./services/notifications
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
     depends_on:
       discovery:
         condition: service_started

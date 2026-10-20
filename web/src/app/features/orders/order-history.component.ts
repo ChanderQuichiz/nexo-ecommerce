@@ -6,7 +6,6 @@ import { firstValueFrom } from 'rxjs';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
 import { OrderService } from '../../core/order.service';
 import { Order } from '../../core/models';
-import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-order-history',
@@ -274,7 +273,7 @@ import { environment } from '../../../environments/environment';
 export class OrderHistoryComponent implements OnInit {
   orders = signal<Order[]>([]);
   selectedOrder = signal<Order | null>(null);
-  
+
   errorMessage = signal('');
   successMessage = signal('');
   paymentModalOpen = signal(false);

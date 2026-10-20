@@ -1,10 +1,11 @@
+server:
+  port: 8081
+
 spring:
   application:
     name: catalog-service
-  datasource:
-    url: ${CATALOG_DATABASE_URL:jdbc:postgresql://catalog-postgres:5432/postgres}
-    username: ${CATALOG_DATABASE_USERNAME:postgres}
-    password: ${CATALOG_DATABASE_PASSWORD:postgres}
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -23,10 +24,6 @@ spring:
       max-file-size: 5MB
       max-request-size: 6MB
 
-server:
-  address: 0.0.0.0
-  port: ${SERVER_PORT:8081}
-
 management:
   endpoints:
     web:
@@ -35,23 +32,3 @@ management:
   endpoint:
     health:
       show-details: always
-
-aws:
-  region: ${CATALOG_AWS_REGION:us-east-2}
-  access-key-id: ${CATALOG_AWS_ACCESS_KEY_ID:}
-  secret-access-key: ${CATALOG_AWS_SECRET_ACCESS_KEY:}
-  s3:
-    bucket: ${CATALOG_AWS_S3_BUCKET:nexo-product-image-542495333597-us-east-2-an}
-    cdn-url: ${CATALOG_CDN_URL:http://du7zrfd5dtnkr.cloudfront.net}
-
-eureka:
-  client:
-    enabled: true
-    register-with-eureka: true
-    fetch-registry: true
-    service-url:
-      defaultZone: ${CATALOG_EUREKA_SERVER_URL:http://discovery:8761/eureka/}
-  instance:
-    prefer-ip-address: true
-    hostname: ${HOSTNAME:localhost}
-    instance-id: ${spring.application.name}:${server.port}

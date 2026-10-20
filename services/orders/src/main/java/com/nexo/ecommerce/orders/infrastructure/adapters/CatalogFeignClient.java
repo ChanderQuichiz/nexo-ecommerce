@@ -13,7 +13,7 @@ import com.nexo.ecommerce.orders.application.client.dto.ValidateStockRequest;
 import com.nexo.ecommerce.orders.application.client.dto.ValidateStockResponse;
 import com.nexo.ecommerce.orders.application.client.dto.ReduceStockRequest;
 
-@FeignClient(name = "catalog-service")
+@FeignClient(name = "catalog-service", fallback = CatalogFeignClientFallback.class)
 public interface CatalogFeignClient extends CatalogClient {
 
     @PostMapping("/catalog/validate-stock")

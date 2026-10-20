@@ -15,13 +15,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   if (token && req.url.startsWith(`${environment.apiUrl}/`)) {
     req = req.clone({
       setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
   }
 
   return next(req).pipe(
-    catchError(error => {
+    catchError((error) => {
       if (error instanceof HttpErrorResponse && error.status === 401 && token) {
         authService.clearSession();
       }

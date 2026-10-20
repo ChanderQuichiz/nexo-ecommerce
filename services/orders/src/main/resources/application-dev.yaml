@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://orders-postgres:5432/postgres
+    username: postgres
+    password: postgres
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+
+stripe:
+  api-key: ${ORDERS_STRIPE_API_KEY}
+  webhook:
+    secret: ${ORDERS_STRIPE_WEBHOOK_SECRET}
+
+eureka:
+  client:
+    enabled: true
+    serviceUrl:
+      defaultZone: http://discovery:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    hostname: localhost

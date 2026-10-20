@@ -1,0 +1,44 @@
+spring:
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        retry:
+          enabled: true
+          max-attempts: 3
+          initial-interval: 1000ms
+          multiplier: 2
+          max-interval: 5000ms
+        default-requeue-rejected: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${NOTIFICATIONS_MAIL_USERNAME}
+    password: ${NOTIFICATIONS_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    test-connection: false
+
+clients:
+  auth:
+    internal-api-key: ${NOTIFICATIONS_INTERNAL_API_KEY}
+
+notifications:
+  mail:
+    from: ${NOTIFICATIONS_MAIL_FROM}
+
+eureka:
+  client:
+    enabled: true
+    service-url:
+      defaultZone: http://discovery:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    hostname: localhost

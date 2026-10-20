@@ -120,7 +120,7 @@ export class CheckoutComponent implements OnInit {
     private fb: FormBuilder,
     private cartService: CartService,
     private orderService: OrderService,
-    private router: Router,
+    private router: Router
   ) {
     this.cartItems = this.cartService.items;
     this.subtotal = this.cartService.totalPrice;
