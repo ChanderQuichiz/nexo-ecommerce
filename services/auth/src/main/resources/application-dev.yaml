@@ -19,10 +19,10 @@ auth:
   admin:
     name: Administrador
     email: admin@gmail.com
-    password: ${AUTH_ADMIN_PASSWORD:example_admin_password}
+    password: ${AUTH_ADMIN_PASSWORD}
   jwt:
-    secret: ${AUTH_JWT_SECRET:example_dev_jwt_secret_key_minimum_32_bytes}
-  internal-api-key: ${AUTH_INTERNAL_API_KEY:example_internal_api_key}
+    secret: ${AUTH_JWT_SECRET}
+  internal-api-key: ${AUTH_INTERNAL_API_KEY}
 
 eureka:
   client:

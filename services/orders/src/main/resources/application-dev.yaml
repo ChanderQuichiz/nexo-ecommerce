@@ -10,9 +10,9 @@ spring:
     password: guest
 
 stripe:
-  api-key: ${ORDERS_STRIPE_API_KEY:sk_test_example_placeholder}
+  api-key: ${ORDERS_STRIPE_API_KEY}
   webhook:
-    secret: ${ORDERS_STRIPE_WEBHOOK_SECRET:whsec_example_placeholder}
+    secret: ${ORDERS_STRIPE_WEBHOOK_SECRET}
 
 eureka:
   client:
