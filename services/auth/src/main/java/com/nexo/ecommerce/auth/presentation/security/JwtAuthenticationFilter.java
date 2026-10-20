@@ -32,9 +32,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return "/auth/login".equals(path)
-                || "/auth/register".equals(path)
-                || "/actuator/health".equals(path);
+        String uri = request.getRequestURI();
+
+        // Evalúa tanto servletPath como requestURI para cubrir stripped paths de API Gateway
+        return path.endsWith("/login") || path.endsWith("/register")
+                || uri.endsWith("/login") || uri.endsWith("/register")
+                || path.contains("/actuator/");
     }
 
     @Override
@@ -42,7 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain filterChain) throws ServletException, IOException {
-        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        // Si es una petición interna válida con API Key
         if (isValidInternalRequest(request)) {
             var authentication = new UsernamePasswordAuthenticationToken(
                     "internal-service",
@@ -52,29 +56,43 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
+
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+
         if (authorization != null && authorization.regionMatches(true, 0, BEARER_PREFIX, 0, BEARER_PREFIX.length())) {
             String token = authorization.substring(BEARER_PREFIX.length()).trim();
-            try {
-                AccessTokenProvider.AccessTokenClaims claims = validateAccessTokenUseCase.execute(token);
-                AuthPrincipal principal = new AuthPrincipal(claims.userId(), claims.email(), claims.role());
-                var authentication = new UsernamePasswordAuthenticationToken(
-                        principal,
-                        null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + claims.role().name())));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (InvalidAccessTokenException exception) {
-                SecurityContextHolder.clearContext();
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"status\":401,\"message\":\"Invalid access token\"}");
-                return;
+            if (!token.isEmpty()) {
+                try {
+                    AccessTokenProvider.AccessTokenClaims claims = validateAccessTokenUseCase.execute(token);
+                    AuthPrincipal principal = new AuthPrincipal(claims.userId(), claims.email(), claims.role());
+                    var authentication = new UsernamePasswordAuthenticationToken(
+                            principal,
+                            null,
+                            List.of(new SimpleGrantedAuthority("ROLE_" + claims.role().name())));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                } catch (InvalidAccessTokenException exception) {
+                    SecurityContextHolder.clearContext();
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"status\":401,\"message\":\"Invalid access token\"}");
+                    return;
+                } catch (Exception exception) {
+                    // Previene que excepciones inesperadas generen un 500 no controlado
+                    SecurityContextHolder.clearContext();
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"status\":401,\"message\":\"Authentication failed\"}");
+                    return;
+                }
             }
         }
+
         filterChain.doFilter(request, response);
     }
 
     private boolean isValidInternalRequest(HttpServletRequest request) {
-        return request.getServletPath().startsWith("/auth/users/")
+        String path = request.getServletPath();
+        return (path.startsWith("/auth/users/") || path.startsWith("/users/"))
                 && internalApiKey != null
                 && !internalApiKey.isBlank()
                 && internalApiKey.equals(request.getHeader("X-Internal-Api-Key"));
