@@ -18,7 +18,7 @@ auth:
     allowed-origins: http://localhost:4200,http://127.0.0.1:4200
   admin:
     name: Administrador
-    email: admin@gmail.com
+    email: ${AUTH_ADMIN_EMAIL}
     password: ${AUTH_ADMIN_PASSWORD}
   jwt:
     secret: ${AUTH_JWT_SECRET}
