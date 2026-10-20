@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { environment } from '../../environments/environment';
 import { AuthResponse, User } from './models';
+import { AppConfigService } from './app-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -12,7 +12,10 @@ export class AuthService {
   private accessToken: string | null = null;
   currentUser = this.currentUserSignal.asReadonly();
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private configService: AppConfigService
+  ) {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem(AuthService.tokenStorageKey);
       const userJson = localStorage.getItem(AuthService.userStorageKey);
@@ -33,18 +36,20 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
-      .pipe(tap(response => this.setSession(response)));
+    return this.http
+      .post<AuthResponse>(`${this.configService.apiUrl}/auth/login`, { email, password })
+      .pipe(tap((response) => this.setSession(response)));
   }
 
   register(name: string, email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, { name, email, password })
-      .pipe(tap(response => this.setSession(response)));
+    return this.http
+      .post<AuthResponse>(`${this.configService.apiUrl}/auth/register`, { name, email, password })
+      .pipe(tap((response) => this.setSession(response)));
   }
 
   logout(): void {
     if (this.accessToken) {
-      this.http.post<void>(`${environment.apiUrl}/auth/logout`, {}).subscribe({ error: () => {} });
+      this.http.post<void>(`${this.configService.apiUrl}/auth/logout`, {}).subscribe({ error: () => {} });
     }
     this.clearSession();
   }

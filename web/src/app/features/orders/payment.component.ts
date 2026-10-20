@@ -3,9 +3,9 @@ import { Component, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
-import { environment } from '../../../environments/environment';
 import { OrderService } from '../../core/order.service';
 import { Order } from '../../core/models';
+import { AppConfigService } from '../../core/app-config.service';
 
 @Component({
   selector: 'app-payment',
@@ -98,6 +98,7 @@ export class PaymentComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private orderService: OrderService,
+    private configService: AppConfigService
   ) {}
 
   ngOnInit(): void {
@@ -108,7 +109,7 @@ export class PaymentComponent implements OnInit {
     }
 
     this.orderService.getOrderById(orderId).subscribe({
-      next: order => {
+      next: (order) => {
         if (order.status !== 'PENDING' && order.status !== 'pending') {
           this.errorMessage.set('Este pedido ya no está pendiente de pago.');
           return;
@@ -151,7 +152,7 @@ export class PaymentComponent implements OnInit {
     let attempts = 0;
     const checkStatus = () => {
       this.orderService.getOrderById(orderId).subscribe({
-        next: order => {
+        next: (order) => {
           this.order.set(order);
           if (order.status === 'PAID') {
             void this.router.navigate(['/orders'], {
@@ -164,7 +165,7 @@ export class PaymentComponent implements OnInit {
             return;
           }
           this.errorMessage.set(
-            'El pago fue confirmado, pero la orden todavía está esperando el webhook de Stripe.',
+            'El pago fue confirmado, pero la orden todavía está esperando el webhook de Stripe.'
           );
         },
         error: () => {
@@ -182,14 +183,14 @@ export class PaymentComponent implements OnInit {
 
   private async initializePaymentElement(): Promise<void> {
     try {
-      this.stripe = await loadStripe(environment.stripePublicKey);
+      this.stripe = await loadStripe(this.configService.stripePublicKey);
       const order = this.order();
       if (!this.stripe || !order) throw new Error('Stripe no está disponible');
       const intentRes = await firstValueFrom(this.orderService.createIntentPayment(order.id));
       if (!intentRes.clientSecret) throw new Error('No se recibió el client secret de Stripe');
       this.elements = this.stripe.elements({ clientSecret: intentRes.clientSecret });
       this.paymentElement = this.elements.create('payment');
-      await new Promise<void>(resolve => setTimeout(resolve, 0));
+      await new Promise<void>((resolve) => setTimeout(resolve, 0));
       this.paymentElement.mount('#stripe-payment-element');
       this.paymentElementReady.set(true);
     } catch {

@@ -1,13 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { AppConfigService } from './app-config.service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService {
-  private readonly notificationsUrl = `${environment.apiUrl}/notifications`;
+  constructor(
+    private http: HttpClient,
+    private configService: AppConfigService
+  ) {}
 
-  constructor(private http: HttpClient) {}
+  private get notificationsUrl(): string {
+    return `${this.configService.apiUrl}/notifications`;
+  }
 
   downloadReceipt(orderId: string): Observable<Blob> {
     return this.http.get(`${this.notificationsUrl}/generate-receipt/${orderId}`, {
